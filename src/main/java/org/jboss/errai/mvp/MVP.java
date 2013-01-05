@@ -26,7 +26,6 @@ import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.navigator.ViewDisplay;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.UI;
-import eu.moncompte.presenter.MainPagePresenter;
 import org.jboss.errai.mvp.annotations.*;
 import org.jboss.errai.mvp.events.GetPlaceTitleEvent;
 import org.jboss.errai.mvp.events.NotifyingAsyncCallback;
