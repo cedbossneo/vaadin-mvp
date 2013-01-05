@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module>
+    <inherits name="com.vaadin.DefaultWidgetSet" />
+
+    <set-configuration-property name='xsiframe.failIfScriptTag' value='FALSE'/>
+    <!-- Include the Google Analytics Tracker JavaScript-->
+    <script src="http://www.google-analytics.com/ga.js" />
+
+
+    
+</module>
