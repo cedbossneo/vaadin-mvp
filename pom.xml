@@ -110,6 +110,11 @@
             <version>${vaadin.version}</version>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>javassist</groupId>
+            <artifactId>javassist</artifactId>
+            <version>3.12.1.GA</version>
+        </dependency>
     </dependencies>
 
     <build>

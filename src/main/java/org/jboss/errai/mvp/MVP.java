@@ -26,6 +26,7 @@ import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.navigator.ViewDisplay;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.UI;
+import javassist.*;
 import org.jboss.errai.mvp.annotations.*;
 import org.jboss.errai.mvp.events.GetPlaceTitleEvent;
 import org.jboss.errai.mvp.events.NotifyingAsyncCallback;
@@ -38,6 +39,7 @@ import org.jboss.errai.mvp.places.PlaceImpl;
 import org.jboss.errai.mvp.places.PlaceWithGatekeeper;
 import org.jboss.errai.mvp.presenters.Presenter;
 import org.jboss.errai.mvp.presenters.RootPresenter;
+import org.jboss.errai.mvp.proxy.ProxyGenerator;
 import org.jboss.errai.mvp.proxy.ProxyImpl;
 import org.jboss.errai.mvp.proxy.ProxyPlace;
 import org.jboss.errai.mvp.proxy.ProxyPlaceImpl;
@@ -59,6 +61,9 @@ import java.util.Set;
 
 @SessionScoped
 public class MVP implements ViewChangeListener {
+    @Inject
+    ProxyGenerator proxyGenerator;
+
     @Inject
     BeanManager beanManager;
 
@@ -108,16 +113,22 @@ public class MVP implements ViewChangeListener {
         VaadinView place = presenter.getAnnotation(VaadinView.class);
         if (place == null)
             return;
-        ProxyImpl<P> proxy = new ProxyImpl<P>(presenter, getEventBus());
-        presentersProxy.put(presenter, proxy);
+        Class proxy = proxyGenerator.createPresenterProxy(presenter);
+        ProxyImpl<P> presenterProxy = null;
+        try {
+            presenterProxy = (ProxyImpl<P>) proxy.getConstructor(EventBus.class).newInstance(getEventBus());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        presentersProxy.put(presenter, presenterProxy);
         if (presenter.isAnnotationPresent(NoGatekeeper.class)){
-            produceProxyPlace(presenter, new PlaceImpl(place.value()), proxy);
+            produceProxyPlace(presenter, new PlaceImpl(place.value()), presenterProxy);
         }else if (presenter.isAnnotationPresent(UseGatekeeper.class))
-            produceProxyPlace(presenter, new PlaceWithGatekeeper(place.value(), gateKeepers.get(presenter.getAnnotation(UseGatekeeper.class).value())), proxy);
+            produceProxyPlace(presenter, new PlaceWithGatekeeper(place.value(), gateKeepers.get(presenter.getAnnotation(UseGatekeeper.class).value())), presenterProxy);
         else if (defaultGateKeeper != null)
-            produceProxyPlace(presenter, new PlaceWithGatekeeper(place.value(), defaultGateKeeper), proxy);
+            produceProxyPlace(presenter, new PlaceWithGatekeeper(place.value(), defaultGateKeeper), presenterProxy);
         else
-            produceProxyPlace(presenter, new PlaceImpl(place.value()), proxy);
+            produceProxyPlace(presenter, new PlaceImpl(place.value()), presenterProxy);
     }
 
     private <P extends Presenter<? extends View>> void produceProxyPlace(final Class<P> presenter, Place place, ProxyImpl<P> proxy) {
