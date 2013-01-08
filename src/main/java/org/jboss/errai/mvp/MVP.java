@@ -88,20 +88,20 @@ public class MVP implements ViewChangeListener {
     }
 
     private void initPresenters() {
-        Set<Bean<?>> presenters = beanManager.getBeans(Presenter.class,
-                new AnnotationLiteral<Any>() {
-                });
-        for (Bean<?> bean : presenters){
-            Class<? extends Presenter<? extends View>> presenter = (Class<? extends Presenter<? extends View>>) bean.getBeanClass();
-            registerPresenter(presenter);
-        }
-
         Set<Bean<?>> gatekeepers = beanManager.getBeans(Gatekeeper.class,
                 new AnnotationLiteral<Any>() {
                 });
         for (Bean<?> bean : gatekeepers){
             Class<? extends Gatekeeper> gatekeeper = (Class<? extends Gatekeeper>) bean.getBeanClass();
             registerGateKeeper(gatekeeper);
+        }
+
+        Set<Bean<?>> presenters = beanManager.getBeans(Presenter.class,
+                new AnnotationLiteral<Any>() {
+                });
+        for (Bean<?> bean : presenters){
+            Class<? extends Presenter<? extends View>> presenter = (Class<? extends Presenter<? extends View>>) bean.getBeanClass();
+            registerPresenter(presenter);
         }
     }
 
