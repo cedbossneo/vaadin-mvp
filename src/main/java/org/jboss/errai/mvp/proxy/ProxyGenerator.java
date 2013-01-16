@@ -28,6 +28,12 @@ public class ProxyGenerator implements Serializable{
     public  <P extends Presenter<? extends View>> Class createPresenterProxy(Class<P> presenter) {
         if (proxies.containsKey(presenter))
             return proxies.get(presenter);
+        try {
+            Class<?> loadedClass = getClass().getClassLoader().loadClass(presenter.getSimpleName() + "Proxy");
+            proxies.put(presenter, loadedClass);
+            return loadedClass;
+        } catch (ClassNotFoundException e) {
+        }
         ClassPool poll = ClassPool.getDefault();
         poll.appendClassPath(new LoaderClassPath(getClass().getClassLoader()));
         try {
