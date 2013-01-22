@@ -178,6 +178,7 @@ public class MVP implements ViewChangeListener {
         gateKeepers.put(gateKeeper, gk);
     }
 
+    @org.vaadin.mvp.annotations.qualifiers.MVP
     @Produces
     public EventBus getEventBus(){
         EventBus eventBus = (EventBus) UI.getCurrent().getSession().getAttribute("eventBus");
@@ -188,6 +189,7 @@ public class MVP implements ViewChangeListener {
         return eventBus;
     }
 
+    @org.vaadin.mvp.annotations.qualifiers.MVP
     @Produces
     public Navigator getNavigator(){
         Navigator navigator = UI.getCurrent().getNavigator();
