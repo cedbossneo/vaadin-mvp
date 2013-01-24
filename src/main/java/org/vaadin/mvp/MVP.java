@@ -78,8 +78,7 @@ public class MVP implements ViewChangeListener {
     private Map<Class<? extends Presenter<? extends View>>, ProxyPlace<? extends Presenter<? extends View>>> presentersPlaces;
     private Map<Class<? extends Gatekeeper>, Gatekeeper> gateKeepers;
 
-    @PostConstruct
-    private void init(){
+    public void init(){
         VaadinSession.getCurrent().setAttribute("mvp", this);
         presentersProxy = new HashMap<Class<? extends Presenter<? extends View>>, ProxyImpl<? extends Presenter<? extends View>>>();
         presentersPlaces = new HashMap<Class<? extends Presenter<? extends View>>, ProxyPlace<? extends Presenter<? extends View>>>();

@@ -17,6 +17,7 @@
 package org.vaadin.mvp.presenters;
 
 import com.google.web.bindery.event.shared.EventBus;
+import org.vaadin.mvp.annotations.qualifiers.MVP;
 import org.vaadin.mvp.events.*;
 import org.vaadin.mvp.views.View;
 
@@ -52,7 +53,7 @@ public class RootPresenter extends
    * @param eventBus The event bus.
    */
   @Inject
-  public RootPresenter(final EventBus eventBus, final RootView view) {
+  public RootPresenter(@MVP final EventBus eventBus, final RootView view) {
     super(eventBus, view);
     visible = true;
   }
