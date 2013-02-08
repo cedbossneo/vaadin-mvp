@@ -19,23 +19,24 @@ import java.util.Map;
  */
 @Singleton
 public class ProxyGenerator implements Serializable{
-    private Map<Class<? extends Presenter<? extends View>>, Class> proxies;
+    private final Map<Class<? extends Presenter<? extends View>>, Class> proxies = new HashMap<Class<? extends Presenter<? extends View>>, Class>();
+    private final ClassPool poll;
 
     public ProxyGenerator() {
-        proxies = new HashMap<Class<? extends Presenter<? extends View>>, Class>();
+        poll = ClassPool.getDefault();
+        poll.appendClassPath(new LoaderClassPath(getClass().getClassLoader()));
     }
 
     public  <P extends Presenter<? extends View>> Class createPresenterProxy(Class<P> presenter) {
-        if (proxies.containsKey(presenter))
+        if (proxies.containsKey(presenter)) //Check in map
             return proxies.get(presenter);
-        try {
-            Class<?> loadedClass = getClass().getClassLoader().loadClass(presenter.getSimpleName() + "Proxy");
+        try { //Check in pool
+            Class<?> loadedClass = poll.get(presenter.getSimpleName() + "Proxy").toClass();
             proxies.put(presenter, loadedClass);
             return loadedClass;
-        } catch (ClassNotFoundException e) {
+        } catch (CannotCompileException e) {
+        } catch (NotFoundException e) {
         }
-        ClassPool poll = ClassPool.getDefault();
-        poll.appendClassPath(new LoaderClassPath(getClass().getClassLoader()));
         try {
             CtClass proxyImplClass = poll.getCtClass(ProxyImpl.class.getName());
             CtClass proxyClass = poll.makeClass(presenter.getSimpleName() + "Proxy", proxyImplClass);
