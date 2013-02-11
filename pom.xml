@@ -30,6 +30,18 @@
             </snapshots>
         </repository>
     </repositories>
+    <distributionManagement>
+        <repository>
+            <id>cbn-release</id>
+            <layout>default</layout>
+            <url>http://admin:cbndev@dev.cbnserver.com/nexus/content/repositories/releases/</url>
+        </repository>
+        <snapshotRepository>
+            <id>cbn-snapshots</id>
+            <layout>default</layout>
+            <url>http://admin:cbndev@dev.cbnserver.com/nexus/content/repositories/snapshots/</url>
+        </snapshotRepository>
+    </distributionManagement>
     <pluginRepositories>
         <pluginRepository>
             <id>vaadin-snapshots</id>
