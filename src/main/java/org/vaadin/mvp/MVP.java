@@ -20,6 +20,7 @@ import com.google.gwt.event.shared.GwtEvent;
 import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.event.shared.SimpleEventBus;
 import com.vaadin.cdi.CDIViewProvider;
+import com.vaadin.cdi.VaadinUIScoped;
 import com.vaadin.cdi.VaadinView;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.navigator.ViewChangeListener;
@@ -44,21 +45,20 @@ import org.vaadin.mvp.proxy.ProxyPlace;
 import org.vaadin.mvp.proxy.ProxyPlaceImpl;
 import org.vaadin.mvp.views.View;
 
-import javax.annotation.PostConstruct;
-import javax.enterprise.context.SessionScoped;
 import javax.enterprise.inject.Any;
 import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.util.AnnotationLiteral;
 import javax.inject.Inject;
+import javax.inject.Provider;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Logger;
 
-@SessionScoped
 public class MVP implements ViewChangeListener {
     @Inject
     ProxyGenerator proxyGenerator;
@@ -70,19 +70,23 @@ public class MVP implements ViewChangeListener {
     CDIViewProvider cdiViewProvider;
 
     @Inject
+    Provider<RootPresenter> rootPresenterProvider;
     RootPresenter rootPresenter;
 
     private GoogleAnalyticsTracker analytics;
     private Gatekeeper defaultGateKeeper;
+    private Map<Class<? extends Presenter<? extends View>>, Presenter<? extends View>> presentersInstance;
     private Map<Class<? extends Presenter<? extends View>>, ProxyImpl<? extends Presenter<? extends View>>> presentersProxy;
     private Map<Class<? extends Presenter<? extends View>>, ProxyPlace<? extends Presenter<? extends View>>> presentersPlaces;
     private Map<Class<? extends Gatekeeper>, Gatekeeper> gateKeepers;
 
     public void init(){
         VaadinSession.getCurrent().setAttribute("mvp", this);
+        presentersInstance = new HashMap<Class<? extends Presenter<? extends View>>, Presenter<? extends View>>();
         presentersProxy = new HashMap<Class<? extends Presenter<? extends View>>, ProxyImpl<? extends Presenter<? extends View>>>();
         presentersPlaces = new HashMap<Class<? extends Presenter<? extends View>>, ProxyPlace<? extends Presenter<? extends View>>>();
         gateKeepers = new HashMap<Class<? extends Gatekeeper>, Gatekeeper>();
+        rootPresenter = rootPresenterProvider.get();
     }
 
     private void initPresenters() {
@@ -180,26 +184,41 @@ public class MVP implements ViewChangeListener {
     @org.vaadin.mvp.annotations.qualifiers.MVP
     @Produces
     public EventBus getEventBus(){
-        EventBus eventBus = (EventBus) UI.getCurrent().getSession().getAttribute("eventBus");
+        UI currentUI = UI.getCurrent();
+        if (currentUI == null)
+            return null;
+        EventBus eventBus = (EventBus) currentUI.getSession().getAttribute("eventBus");
         if (eventBus == null){
             eventBus = new SimpleEventBus();
-            UI.getCurrent().getSession().setAttribute("eventBus", eventBus);
+            currentUI.getSession().setAttribute("eventBus", eventBus);
         }
         return eventBus;
     }
 
     @org.vaadin.mvp.annotations.qualifiers.MVP
     @Produces
+    public MVP getMVP(){
+        UI currentUI = UI.getCurrent();
+        if (currentUI == null)
+            return null;
+        return  (MVP) currentUI.getSession().getAttribute("mvp");
+    }
+
+    @org.vaadin.mvp.annotations.qualifiers.MVP
+    @Produces
     public Navigator getNavigator(){
-        Navigator navigator = UI.getCurrent().getNavigator();
+        UI currentUI = UI.getCurrent();
+        if (currentUI == null)
+            return null;
+        Navigator navigator = currentUI.getNavigator();
         if (navigator == null){
-            navigator = new Navigator(UI.getCurrent(), new ViewDisplay() {
+            navigator = new Navigator(currentUI, new ViewDisplay() {
                 @Override
                 public void showView(com.vaadin.navigator.View view) {
 
                 }
             });
-            UI.getCurrent().setNavigator(navigator);
+            currentUI.setNavigator(navigator);
             navigator.addProvider(cdiViewProvider);
             navigator.addViewChangeListener(this);
         }
@@ -221,13 +240,21 @@ public class MVP implements ViewChangeListener {
     public <P extends Presenter<?>> void getPresenter(Class<P> presenterClass, NotifyingAsyncCallback<P> callback) {
         callback.prepare();
         callback.checkLoading();
-        Bean<P> bean = (Bean<P>) beanManager.getBeans(presenterClass).iterator().next();
-        P obj = (P) beanManager.getReference(bean, presenterClass,
-                beanManager.createCreationalContext(bean));
-        if (bean == null)
-            callback.onFailure(new Throwable("Error while getting bean"));
-        else
-            callback.onSuccess(obj);
+        if (presentersInstance.containsKey(presenterClass)){
+            Logger.getLogger(getClass().getName()).fine("Presenter fetched: " + presenterClass.getName());
+            callback.onSuccess((P) presentersInstance.get(presenterClass));
+        }else{
+            Bean<P> bean = (Bean<P>) beanManager.getBeans(presenterClass).iterator().next();
+            P obj = (P) beanManager.getReference(bean, presenterClass,
+                    beanManager.createCreationalContext(bean));
+            if (bean == null)
+                callback.onFailure(new Throwable("Error while getting bean"));
+            else{
+                Logger.getLogger(getClass().getName()).fine("New presenter created: " + presenterClass.getName());
+                presentersInstance.put(presenterClass, obj);
+                callback.onSuccess(obj);
+            }
+        }
         callback.checkLoading();
     }
 
