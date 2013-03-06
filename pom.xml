@@ -29,17 +29,41 @@
                 <enabled>true</enabled>
             </snapshots>
         </repository>
+        <repository>
+            <id>cbn-pub</id>
+            <url>http://dev.cbnserver.com/nexus/content/groups/public/</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>cbn-dev</id>
+            <url>http://dev.cbnserver.com/nexus/content/repositories/snapshots/</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>cbn-rel</id>
+            <url>http://dev.cbnserver.com/nexus/content/repositories/releases/</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+        </repository>
     </repositories>
     <distributionManagement>
         <repository>
             <id>cbn-release</id>
             <layout>default</layout>
-            <url>http://admin:cbndev@dev.cbnserver.com/nexus/content/repositories/releases/</url>
+            <url>http://dev.cbnserver.com/nexus/content/repositories/releases/</url>
         </repository>
         <snapshotRepository>
             <id>cbn-snapshots</id>
             <layout>default</layout>
-            <url>http://admin:cbndev@dev.cbnserver.com/nexus/content/repositories/snapshots/</url>
+            <url>http://dev.cbnserver.com/nexus/content/repositories/snapshots/</url>
         </snapshotRepository>
     </distributionManagement>
     <pluginRepositories>
