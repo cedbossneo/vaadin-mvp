@@ -19,9 +19,8 @@ package org.vaadin.mvp;
 import com.google.gwt.event.shared.GwtEvent;
 import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.event.shared.SimpleEventBus;
+import com.vaadin.cdi.CDIView;
 import com.vaadin.cdi.CDIViewProvider;
-import com.vaadin.cdi.VaadinUIScoped;
-import com.vaadin.cdi.VaadinView;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.navigator.ViewDisplay;
@@ -112,7 +111,7 @@ public class MVP implements ViewChangeListener {
     }
 
     public <P extends Presenter<? extends View>> void registerPresenter(Class<P> presenter) {
-        VaadinView place = presenter.getAnnotation(VaadinView.class);
+        CDIView place = presenter.getAnnotation(CDIView.class);
         if (place == null)
             return;
         Class proxy = proxyGenerator.createPresenterProxy(presenter);
