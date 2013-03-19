@@ -51,6 +51,7 @@ import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.util.AnnotationLiteral;
 import javax.inject.Inject;
 import javax.inject.Provider;
+import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
@@ -188,7 +189,7 @@ public class MVP implements ViewChangeListener {
             return null;
         EventBus eventBus = (EventBus) currentUI.getSession().getAttribute("eventBus");
         if (eventBus == null){
-            eventBus = new SimpleEventBus();
+            eventBus = new SerializableEventBus();
             currentUI.getSession().setAttribute("eventBus", eventBus);
         }
         return eventBus;
@@ -265,5 +266,8 @@ public class MVP implements ViewChangeListener {
                 UI.getCurrent().getNavigator().addView("", result);
             }
         });
+    }
+
+    public class SerializableEventBus extends SimpleEventBus implements Serializable {
     }
 }

@@ -10,7 +10,7 @@
 
     <groupId>com.cbnserver</groupId>
     <artifactId>vaadin-mvp</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0</version>
     <packaging>jar</packaging>
     <name>vaadin-mvp</name>
 
@@ -58,12 +58,12 @@
         <repository>
             <id>cbn-release</id>
             <layout>default</layout>
-            <url>http://dev.cbnserver.com/nexus/content/repositories/releases/</url>
+            <url>http://admin:cbndev@dev.cbnserver.com/nexus/content/repositories/releases/</url>
         </repository>
         <snapshotRepository>
             <id>cbn-snapshots</id>
             <layout>default</layout>
-            <url>http://dev.cbnserver.com/nexus/content/repositories/snapshots/</url>
+            <url>http://admin:cbndev@dev.cbnserver.com/nexus/content/repositories/snapshots/</url>
         </snapshotRepository>
     </distributionManagement>
     <pluginRepositories>
