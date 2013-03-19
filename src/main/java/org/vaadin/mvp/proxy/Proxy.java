@@ -21,6 +21,8 @@ import com.google.web.bindery.event.shared.EventBus;
 import org.vaadin.mvp.events.NotifyingAsyncCallback;
 import org.vaadin.mvp.presenters.Presenter;
 
+import java.io.Serializable;
+
 /**
  * The interface for light-weight singleton classes that listens for events
  * before the full {@link org.vaadin.mvp.presenters.Presenter} is instantiated. This include, among
@@ -36,7 +38,7 @@ import org.vaadin.mvp.presenters.Presenter;
  *
  * @author Philippe Beaudoin
  */
-public interface Proxy<P extends Presenter<?>> extends HasHandlers {
+public interface Proxy<P extends Presenter<?>> extends HasHandlers, Serializable {
 
   /**
    * Makes it possible to access the {@link com.google.web.bindery.event.shared.EventBus} object associated with

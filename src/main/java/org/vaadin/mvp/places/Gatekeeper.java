@@ -16,6 +16,8 @@
 
 package org.vaadin.mvp.places;
 
+import java.io.Serializable;
+
 /**
  * Inherit from this class to define a gatekeeper that locks access to your
  * {@link Place} in specific situation. For example:
@@ -47,7 +49,7 @@ package org.vaadin.mvp.places;
  * @author Philippe Beaudoin
  * @author Olivier Monaco
  */
-public interface Gatekeeper {
+public interface Gatekeeper extends Serializable{
   /**
    * Checks whether or not the {@link Place} controlled by this gatekeeper can
    * be revealed.

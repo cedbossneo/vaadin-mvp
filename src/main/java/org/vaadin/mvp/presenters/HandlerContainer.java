@@ -16,6 +16,8 @@
 
 package org.vaadin.mvp.presenters;
 
+import java.io.Serializable;
+
 /**
  * A class that can contain handlers. Handlers can be registered when
  * the object is being bound, or at any time while it is bound. They
@@ -25,7 +27,7 @@ package org.vaadin.mvp.presenters;
  *
  * @author Philippe Beaudoin
  */
-public interface HandlerContainer {
+public interface HandlerContainer extends Serializable{
 
   /**
    * Call this method after the object is constructed in order to bind all its

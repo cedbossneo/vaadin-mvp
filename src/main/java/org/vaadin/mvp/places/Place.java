@@ -18,6 +18,8 @@ package org.vaadin.mvp.places;
 
 import com.vaadin.navigator.ViewChangeListener;
 
+import java.io.Serializable;
+
 /**
  * <b>Important:</b> For simplicity, places do not participate in dependency
  * injection and can be created with <code>new</code>.
@@ -30,7 +32,7 @@ import com.vaadin.navigator.ViewChangeListener;
  *
  * @author Philippe Beaudoin
  */
-public interface Place {
+public interface Place extends Serializable{
 
   /**
    * Checks if the associated presenter can be revealed.
