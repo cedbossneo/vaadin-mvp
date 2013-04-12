@@ -25,6 +25,7 @@ import com.vaadin.ui.UI;
 import org.vaadin.mvp.core.events.NotifyingAsyncCallback;
 import org.vaadin.mvp.core.presenters.Presenter;
 import org.vaadin.mvp.core.presenters.RootPresenter;
+import org.vaadin.mvp.core.proxy.ProxyPlace;
 
 import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.spi.Bean;
@@ -32,6 +33,7 @@ import javax.enterprise.inject.spi.BeanManager;
 import javax.inject.Inject;
 import javax.inject.Provider;
 import java.io.Serializable;
+import java.util.Set;
 import java.util.logging.Logger;
 
 public class MVP implements Serializable{
@@ -46,8 +48,12 @@ public class MVP implements Serializable{
     RootPresenter rootPresenter;
 
    public void init(){
-        VaadinSession.getCurrent().setAttribute("mvp", this);
-        rootPresenter = rootPresenterProvider.get();
+       VaadinSession.getCurrent().setAttribute("mvp", this);
+       rootPresenter = rootPresenterProvider.get();
+       Set<Bean<?>> proxies = beanManager.getBeans(ProxyPlace.class);
+       for (Bean<?> proxy : proxies) {
+           beanManager.getReference(proxy, proxy.getBeanClass(), beanManager.createCreationalContext(proxy));
+       }
     }
 
     public void initGoogleAnalytics(String gaAccount){
@@ -92,7 +98,7 @@ public class MVP implements Serializable{
                 }
             });
             currentUI.setNavigator(navigator);
-            navigator.addProvider(cdiViewProvider);
+//            navigator.addProvider(cdiViewProvider);
         }
         return navigator;
     }

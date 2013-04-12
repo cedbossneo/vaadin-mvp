@@ -90,6 +90,7 @@ public class ProxyPlaceAbstract<P extends Presenter<?>, Proxy_ extends Proxy<P>>
                       }
                   }
               });
+      navigator.addView(place.getNameToken(), this);
   }
 
   @Override
