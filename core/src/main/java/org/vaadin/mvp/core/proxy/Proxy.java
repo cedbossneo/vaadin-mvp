@@ -24,6 +24,8 @@ import org.vaadin.mvp.core.presenters.Presenter;
 
 import java.io.Serializable;
 
+import java.io.Serializable;
+
 /**
  * The interface for light-weight singleton classes that listens for events
  * before the full {@link org.vaadin.mvp.core.presenters.Presenter} is instantiated. This include, among
