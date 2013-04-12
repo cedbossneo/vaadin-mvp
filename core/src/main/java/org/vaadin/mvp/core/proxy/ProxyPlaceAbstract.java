@@ -56,24 +56,6 @@ public class ProxyPlaceAbstract<P extends Presenter<?>, Proxy_ extends Proxy<P>>
       this.place = place;
       this.navigator = navigator;
       this.eventBus = proxy.getEventBus();
-      eventBus.addHandler(PlaceRequestInternalEvent.getType(),
-              new PlaceRequestInternalHandler() {
-                  @Override
-                  public void onPlaceRequest(PlaceRequestInternalEvent event) {
-                      if (event.isHandled()) {
-                          return;
-                      }
-                      ViewChangeListener.ViewChangeEvent request = event.getRequest();
-                      if (matchesRequest(request)) {
-                          event.setHandled();
-                          if (canReveal()) {
-                              handleRequest(request);
-                          } else {
-                              event.setUnauthorized();
-                          }
-                      }
-                  }
-              });
       eventBus.addHandler(GetPlaceTitleEvent.getType(),
               new GetPlaceTitleHandler() {
                   @Override
@@ -210,6 +192,8 @@ public class ProxyPlaceAbstract<P extends Presenter<?>, Proxy_ extends Proxy<P>>
 
     @Override
     public void enter(ViewChangeListener.ViewChangeEvent viewChangeEvent) {
-        getEventBus().fireEvent(new PlaceRequestInternalEvent(viewChangeEvent));
+        if (canReveal()) {
+            handleRequest(viewChangeEvent);
+        }
     }
 }
