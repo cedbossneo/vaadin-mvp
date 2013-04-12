@@ -148,8 +148,13 @@ public class ProxyProcessor extends AbstractProcessor {
                     proxyClass._implements(jCodeModel.directClass(handler.getQualifiedName().toString()));
                     String event = ((TypeElement)processingEnv.getTypeUtils().asElement(firstParameter.asType())).getQualifiedName().toString();
                     JMethod eventMethod = proxyClass.method(JMod.PUBLIC, void.class, method.getSimpleName().toString());
-                    eventMethod.param(jCodeModel.directClass(event), "event");
-                    eventMethod.body().directStatement( "       invokeMethod(\""+method.getSimpleName().toString()+"\", event, "+ event +".class);");
+                    eventMethod.param(JMod.FINAL, jCodeModel.directClass(event), "event");
+                    eventMethod.body().directStatement("getPresenter(new org.vaadin.mvp.core.events.NotifyingAsyncCallback<"+presenter.getQualifiedName().toString()+">(getEventBus()) {\n" +
+                            "          @Override\n" +
+                            "          protected void success("+presenter.getQualifiedName().toString()+" result) {\n" +
+                            "              result."+method.getSimpleName().toString()+"(event);"+
+                            "          }\n" +
+                            "      });");
                     stringBuffer.append("getEventBus().addHandler(" + event + ".getType(), this);");
             }
         }

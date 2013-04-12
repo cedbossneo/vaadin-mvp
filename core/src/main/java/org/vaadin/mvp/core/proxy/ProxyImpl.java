@@ -51,23 +51,6 @@ public class ProxyImpl<P extends Presenter<?>> implements Proxy<P> {
     callback.checkLoading();
   }
 
-  public void invokeMethod(final String methodName, final Object event, final Class<?> eventClass){
-      getPresenter(new NotifyingAsyncCallback<P>(getEventBus()) {
-          @Override
-          protected void success(P result) {
-              try {
-                  presenterClass.getMethod(methodName, eventClass).invoke(result, event);
-              } catch (IllegalAccessException e) {
-                  e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-              } catch (InvocationTargetException e) {
-                  e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-              } catch (NoSuchMethodException e) {
-                  e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-              }
-          }
-      });
-  }
-
   @Override
   public void fireEvent(GwtEvent<?> event) {
     eventBus.fireEventFromSource(event, this);
