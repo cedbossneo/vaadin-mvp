@@ -27,6 +27,7 @@ import org.vaadin.mvp.core.presenters.Presenter;
 import org.vaadin.mvp.core.presenters.RootPresenter;
 import org.vaadin.mvp.core.proxy.ProxyPlace;
 
+import javax.enterprise.inject.Default;
 import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
@@ -91,14 +92,8 @@ public class MVP implements Serializable{
             return null;
         Navigator navigator = currentUI.getNavigator();
         if (navigator == null){
-            navigator = new Navigator(currentUI, new ViewDisplay() {
-                @Override
-                public void showView(com.vaadin.navigator.View view) {
-
-                }
-            });
+            navigator = new MVPNavigator(currentUI);
             currentUI.setNavigator(navigator);
-//            navigator.addProvider(cdiViewProvider);
         }
         return navigator;
     }
