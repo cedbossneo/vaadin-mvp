@@ -8,21 +8,4 @@
         <param-name>productionMode</param-name>
         <param-value>false</param-value>
     </context-param>
-    <servlet>
-        <servlet-name>Vaadin Application Servlet</servlet-name>
-        <servlet-class>com.vaadin.cdi.internal.VaadinCDIServlet</servlet-class>
-        <init-param>
-            <description>Vaadin UI to display</description>
-            <param-name>UI</param-name>
-            <param-value>com.cbnserver.vaadin.mvp.example.MyVaadinApplication</param-value>
-        </init-param>
-        <init-param>
-            <param-name>widgetset</param-name>
-            <param-value>com.cbnserver.vaadin.mvp.example.MyVaadinApplication</param-value>
-        </init-param>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>Vaadin Application Servlet</servlet-name>
-        <url-pattern>/*</url-pattern>
-    </servlet-mapping>
 </web-app>

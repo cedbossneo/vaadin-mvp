@@ -93,6 +93,7 @@ public class MVP implements Serializable{
         Navigator navigator = currentUI.getNavigator();
         if (navigator == null){
             navigator = new MVPNavigator(currentUI);
+            navigator.addProvider(cdiViewProvider);
             currentUI.setNavigator(navigator);
         }
         return navigator;

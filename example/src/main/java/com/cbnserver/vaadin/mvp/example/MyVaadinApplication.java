@@ -16,9 +16,8 @@
 package com.cbnserver.vaadin.mvp.example;
 
 import com.vaadin.annotations.PreserveOnRefresh;
-import com.vaadin.annotations.Theme;
 import com.vaadin.cdi.CDIUI;
-import com.vaadin.cdi.Root;
+import com.vaadin.cdi.URLMapping;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.ui.UI;
 import org.vaadin.mvp.core.MVP;
@@ -31,7 +30,7 @@ import javax.inject.Inject;
 @SuppressWarnings("serial")
 @CDIUI
 @PreserveOnRefresh
-@Root
+@URLMapping
 public class MyVaadinApplication extends UI {
     @Inject
     MVP mvp;
