@@ -16,10 +16,10 @@
 
 package org.vaadin.mvp.core.events;
 
-import com.google.web.bindery.event.shared.EventBus;
+import org.vaadin.mvp.core.MVPEventBus;
 
 /**
- * An implementation of {@link com.google.gwt.user.client.rpc.AsyncCallback} that sends events on the {@link com.google.web.bindery.event.shared.EventBus} whenever
+ * An implementation of {@link com.google.gwt.user.client.rpc.AsyncCallback} that sends events on the {@link org.vaadin.mvp.core.MVPEventBus} whenever
  * an async call starts, succeeds, or fails. The events fired are {@link AsyncCallStartEvent},
  * {@link AsyncCallSucceedEvent}, {@link AsyncCallFailEvent}.
  *
@@ -59,11 +59,11 @@ public abstract class NotifyingAsyncCallback<T> implements AsyncCallback<T> {
   // this class is created inside generators
   static int counter;
 
-  private final EventBus eventBus;
+  private final MVPEventBus eventBus;
 
   private State state;
 
-  public NotifyingAsyncCallback(EventBus eventBus) {
+  public NotifyingAsyncCallback(MVPEventBus eventBus) {
     this.eventBus = eventBus;
     state = State.UNKNOWN;
   }

@@ -39,7 +39,7 @@ public final class NavigationEvent extends GwtEvent<NavigationHandler> {
 
   /**
    * Fires a {@link NavigationEvent}
-   * into a source that has access to an {@link com.google.web.bindery.event.shared.EventBus}.
+   * into a source that has access to an {@link org.vaadin.mvp.core.MVPEventBus}.
    *
    * @param source The source that fires this event ({@link com.google.gwt.event.shared.HasHandlers}).
    * @param request The {@link org.vaadin.mvp.places.PlaceRequest} that was navigated to.

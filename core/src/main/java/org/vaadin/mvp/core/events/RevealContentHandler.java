@@ -17,10 +17,9 @@
 package org.vaadin.mvp.core.events;
 
 import com.google.gwt.event.shared.EventHandler;
-import com.google.web.bindery.event.shared.EventBus;
+import org.vaadin.mvp.core.MVPEventBus;
 import org.vaadin.mvp.core.proxy.ProxyImpl;
 import org.vaadin.mvp.core.presenters.Presenter;
-import org.vaadin.mvp.core.proxy.ProxyImpl;
 
 /**
  * This is the handler class for {@link RevealContentEvent}. It should be used
@@ -34,10 +33,10 @@ import org.vaadin.mvp.core.proxy.ProxyImpl;
  */
 public class RevealContentHandler<T extends Presenter<?>> implements EventHandler {
 
-    private final EventBus eventBus;
+    private final MVPEventBus eventBus;
     private final ProxyImpl<T> proxy;
 
-    public RevealContentHandler(final EventBus eventBus,
+    public RevealContentHandler(final MVPEventBus eventBus,
                                 final ProxyImpl<T> proxy) {
         this.eventBus = eventBus;
         this.proxy = proxy;

@@ -20,13 +20,9 @@ import com.google.gwt.event.shared.EventHandler;
 import com.google.gwt.event.shared.GwtEvent;
 import com.google.gwt.event.shared.GwtEvent.Type;
 import com.google.gwt.event.shared.HasHandlers;
-import com.google.web.bindery.event.shared.EventBus;
+import org.vaadin.mvp.core.MVPEventBus;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 import com.vaadin.ui.Component;
-import org.vaadin.mvp.core.events.ResetPresentersEvent;
-import org.vaadin.mvp.core.views.PopupView;
-import org.vaadin.mvp.core.views.PopupViewCloseHandler;
-import org.vaadin.mvp.core.views.View;
 import org.vaadin.mvp.core.events.ResetPresentersEvent;
 import org.vaadin.mvp.core.views.PopupView;
 import org.vaadin.mvp.core.views.PopupViewCloseHandler;
@@ -112,7 +108,7 @@ import java.util.Map;
  */
 public abstract class  PresenterWidget<V extends View> extends
     HandlerContainerImpl implements HasHandlers, HasSlots, HasPopupSlot {
-  private final EventBus eventBus;
+  private final MVPEventBus eventBus;
   private final V view;
 
   boolean visible;
@@ -147,10 +143,10 @@ public abstract class  PresenterWidget<V extends View> extends
    * more details on automatic binding.
    *
    * @param autoBind {@code true} to request automatic binding, {@code false} otherwise.
-   * @param eventBus The {@link com.google.web.bindery.event.shared.EventBus}.
+   * @param eventBus The {@link org.vaadin.mvp.core.MVPEventBus}.
    * @param view The {@link org.vaadin.mvp.core.views.View}.
    */
-  public PresenterWidget(boolean autoBind, EventBus eventBus, V view) {
+  public PresenterWidget(boolean autoBind, MVPEventBus eventBus, V view) {
     super(autoBind);
 
     this.eventBus = eventBus;
@@ -163,10 +159,10 @@ public abstract class  PresenterWidget<V extends View> extends
    * See {@link HandlerContainerImpl#HandlerContainerImpl()} for more details on
    * automatic binding.
    *
-   * @param eventBus The {@link com.google.web.bindery.event.shared.EventBus}.
+   * @param eventBus The {@link org.vaadin.mvp.core.MVPEventBus}.
    * @param view The {@link org.vaadin.mvp.core.views.View}.
    */
-  public PresenterWidget(EventBus eventBus, V view) {
+  public PresenterWidget(MVPEventBus eventBus, V view) {
     this(true, eventBus, view);
   }
 
@@ -366,7 +362,7 @@ public abstract class  PresenterWidget<V extends View> extends
   }
 
   /**
-   * Registers an event handler towards the {@link com.google.web.bindery.event.shared.EventBus} and
+   * Registers an event handler towards the {@link org.vaadin.mvp.core.MVPEventBus} and
    * registers it to be automatically removed when {@link #unbind()}
    * is called. This is usually the desired behavior, but if you
    * want to unregister handlers manually use {@link #addHandler}
@@ -384,7 +380,7 @@ public abstract class  PresenterWidget<V extends View> extends
   }
 
   /**
-   * Registers an event handler towards the {@link com.google.web.bindery.event.shared.EventBus}.
+   * Registers an event handler towards the {@link org.vaadin.mvp.core.MVPEventBus}.
    * Use this only in the rare situations where you want to manually
    * control when the handler is unregistered, otherwise call
    * {@link #addRegisteredHandler(com.google.gwt.event.shared.GwtEvent.Type, com.google.gwt.event.shared.EventHandler)}.
@@ -400,14 +396,14 @@ public abstract class  PresenterWidget<V extends View> extends
   }
 
   /**
-   * Access the {@link com.google.web.bindery.event.shared.EventBus} object associated with that presenter.
+   * Access the {@link org.vaadin.mvp.core.MVPEventBus} object associated with that presenter.
    * You should not usually use this method to interact with the event bus.
    * Instead call {@link #fireEvent}, {@link #addRegisteredHandler} or
    * {@link #addHandler}.
    *
    * @return The EventBus associated with that presenter.
    */
-  protected final EventBus getEventBus() {
+  protected final MVPEventBus getEventBus() {
     return eventBus;
   }
 

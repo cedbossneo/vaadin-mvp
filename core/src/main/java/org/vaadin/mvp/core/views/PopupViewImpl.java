@@ -16,7 +16,7 @@
 
 package org.vaadin.mvp.core.views;
 
-import com.google.web.bindery.event.shared.EventBus;
+import org.vaadin.mvp.core.MVPEventBus;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
@@ -38,17 +38,17 @@ public abstract class PopupViewImpl extends ViewImpl implements PopupView {
   private HandlerRegistration autoHideHandler;
 
   private Window.CloseListener closeListener;
-  private final EventBus eventBus;
+  private final MVPEventBus eventBus;
 
   /**
-   * The {@link PopupViewImpl} class uses the {@link com.google.web.bindery.event.shared.EventBus} to listen to
+   * The {@link PopupViewImpl} class uses the {@link org.vaadin.mvp.core.MVPEventBus} to listen to
    * {@link NavigationEvent} in order to automatically close when this event is
    * fired, if desired. See
    * {@link #setAutoHideOnNavigationEventEnabled(boolean)} for details.
    *
-   * @param eventBus The {@link com.google.web.bindery.event.shared.EventBus}.
+   * @param eventBus The {@link org.vaadin.mvp.core.MVPEventBus}.
    */
-  protected PopupViewImpl(EventBus eventBus) {
+  protected PopupViewImpl(MVPEventBus eventBus) {
     this.eventBus = eventBus;
   }
 

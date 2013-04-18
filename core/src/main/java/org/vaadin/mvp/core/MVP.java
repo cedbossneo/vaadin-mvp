@@ -16,18 +16,12 @@
 
 package org.vaadin.mvp.core;
 
-import com.google.web.bindery.event.shared.EventBus;
-import com.vaadin.cdi.CDIViewProvider;
-import com.vaadin.navigator.Navigator;
-import com.vaadin.navigator.ViewDisplay;
+import com.vaadin.cdi.UIScoped;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.UI;
-import org.vaadin.mvp.core.events.NotifyingAsyncCallback;
-import org.vaadin.mvp.core.presenters.Presenter;
 import org.vaadin.mvp.core.presenters.RootPresenter;
 import org.vaadin.mvp.core.proxy.ProxyPlace;
 
-import javax.enterprise.inject.Default;
 import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
@@ -35,14 +29,11 @@ import javax.inject.Inject;
 import javax.inject.Provider;
 import java.io.Serializable;
 import java.util.Set;
-import java.util.logging.Logger;
 
+@UIScoped
 public class MVP implements Serializable{
     @Inject
     BeanManager beanManager;
-
-    @Inject
-    CDIViewProvider cdiViewProvider;
 
     @Inject
     Provider<RootPresenter> rootPresenterProvider;
@@ -56,62 +47,4 @@ public class MVP implements Serializable{
            beanManager.getReference(proxy, proxy.getBeanClass(), beanManager.createCreationalContext(proxy));
        }
     }
-
-    public void initGoogleAnalytics(String gaAccount){
-        getNavigator().addViewChangeListener(new MVPViewChangeListener(gaAccount));
-   }
-
-    @org.vaadin.mvp.core.annotations.qualifiers.MVP
-    @Produces
-    public EventBus getEventBus(){
-        UI currentUI = UI.getCurrent();
-        if (currentUI == null)
-            return null;
-        EventBus eventBus = (EventBus) currentUI.getSession().getAttribute("eventBus");
-        if (eventBus == null){
-            eventBus = new MVPEventBus();
-            currentUI.getSession().setAttribute("eventBus", eventBus);
-        }
-        return eventBus;
-    }
-
-    @org.vaadin.mvp.core.annotations.qualifiers.MVP
-    @Produces
-    public MVP getMVP(){
-        UI currentUI = UI.getCurrent();
-        if (currentUI == null)
-            return null;
-        return  (MVP) currentUI.getSession().getAttribute("mvp");
-    }
-
-    @org.vaadin.mvp.core.annotations.qualifiers.MVP
-    @Produces
-    public Navigator getNavigator(){
-        UI currentUI = UI.getCurrent();
-        if (currentUI == null)
-            return null;
-        Navigator navigator = currentUI.getNavigator();
-        if (navigator == null){
-            navigator = new MVPNavigator(currentUI);
-            navigator.addProvider(cdiViewProvider);
-            currentUI.setNavigator(navigator);
-        }
-        return navigator;
-    }
-
-    public <P extends Presenter<?>> void getPresenter(Class<P> presenterClass, NotifyingAsyncCallback<P> callback) {
-        callback.prepare();
-        callback.checkLoading();
-        Bean<P> bean = (Bean<P>) beanManager.getBeans(presenterClass).iterator().next();
-        P obj = (P) beanManager.getReference(bean, presenterClass,
-                beanManager.createCreationalContext(bean));
-        if (bean == null)
-            callback.onFailure(new Throwable("Error while getting bean"));
-        else{
-            Logger.getLogger(getClass().getName()).fine("New presenter created: " + presenterClass.getName());
-            callback.onSuccess(obj);
-        }
-        callback.checkLoading();
-    }
-
 }

@@ -16,7 +16,7 @@
 
 package org.vaadin.mvp.core.views;
 
-import com.google.web.bindery.event.shared.EventBus;
+import org.vaadin.mvp.core.MVPEventBus;
 
 /**
  * Base class for a {@link PopupView} that implements the {@link HasUiHandlers}
@@ -36,14 +36,14 @@ PopupViewImpl implements HasUiHandlers<C> {
   private C uiHandlers;
 
   /**
-   * The {@link org.vaadin.mvp.client.views.PopupViewWithUiHandlers} class uses the {@link com.google.web.bindery.event.shared.EventBus} to listen to
+   * The {@link org.vaadin.mvp.client.views.PopupViewWithUiHandlers} class uses the {@link org.vaadin.mvp.core.MVPEventBus} to listen to
    * {@link org.vaadin.mvp.client.events.NavigationEvent} in order to automatically
    * close when this event is fired, if desired. See
    * {@link #setAutoHideOnNavigationEventEnabled(boolean)} for details.
    *
-   * @param eventBus The {@link com.google.web.bindery.event.shared.EventBus}.
+   * @param eventBus The {@link org.vaadin.mvp.core.MVPEventBus}.
    */
-  protected PopupViewWithUiHandlers(EventBus eventBus) {
+  protected PopupViewWithUiHandlers(MVPEventBus eventBus) {
     super(eventBus);
   }
 

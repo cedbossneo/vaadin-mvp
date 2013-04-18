@@ -16,9 +16,13 @@
 
 package org.vaadin.mvp.core.presenters;
 
-import com.google.web.bindery.event.shared.EventBus;
+import com.vaadin.cdi.UIScoped;
+import org.vaadin.mvp.core.MVPEventBus;
 import com.vaadin.navigator.ViewChangeListener;
 import org.vaadin.mvp.core.views.View;
+
+import javax.enterprise.context.Dependent;
+import javax.enterprise.context.SessionScoped;
 
 /**
  * A singleton presenter, the basic building block of the
@@ -136,10 +140,10 @@ public abstract class Presenter<V extends View> extends PresenterWidget<V>{
    * more details on automatic binding.
    *
    * @param autoBind {@code true} to request automatic binding, {@code false} otherwise.
-   * @param eventBus The {@link com.google.web.bindery.event.shared.EventBus}.
+   * @param eventBus The {@link org.vaadin.mvp.core.MVPEventBus}.
    * @param view The {@link org.vaadin.mvp.core.views.View}.
    */
-  public Presenter(boolean autoBind, EventBus eventBus, V view) {
+  public Presenter(boolean autoBind, MVPEventBus eventBus, V view) {
     super(autoBind, eventBus, view);
   }
 
@@ -149,10 +153,10 @@ public abstract class Presenter<V extends View> extends PresenterWidget<V>{
    * See {@link HandlerContainerImpl#HandlerContainerImpl()} for more details on
    * automatic binding.
    *
-   * @param eventBus The {@link com.google.web.bindery.event.shared.EventBus}.
+   * @param eventBus The {@link org.vaadin.mvp.core.MVPEventBus}.
    * @param view The {@link org.vaadin.mvp.core.views.View}.
    */
-  public Presenter(EventBus eventBus, V view) {
+  public Presenter(MVPEventBus eventBus, V view) {
     super(eventBus, view);
   }
 

@@ -36,7 +36,7 @@ public class GetPlaceTitleEvent extends GwtEvent<GetPlaceTitleHandler> {
 
   /**
    * Fires a {@link GetPlaceTitleEvent}
-   * into a source that has access to an {@link com.google.web.bindery.event.shared.EventBus}.
+   * into a source that has access to an {@link org.vaadin.mvp.core.MVPEventBus}.
    * <p />
    * <b>Important!</b> You should never fire that event directly. See
    * {@link GetPlaceTitleEvent} for details.

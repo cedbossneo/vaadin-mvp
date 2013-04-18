@@ -1,8 +1,8 @@
 package com.cbnserver.vaadin.mvp.example;
 
-import com.google.web.bindery.event.shared.EventBus;
+import com.vaadin.cdi.UIScoped;
+import org.vaadin.mvp.core.MVPEventBus;
 import org.vaadin.mvp.core.annotations.PlaceToken;
-import org.vaadin.mvp.core.annotations.qualifiers.MVP;
 import org.vaadin.mvp.core.events.RevealRootContentEvent;
 import org.vaadin.mvp.core.presenters.Presenter;
 import org.vaadin.mvp.core.views.HasUiHandlers;
@@ -18,10 +18,11 @@ import javax.inject.Inject;
  * To change this template use File | Settings | File Templates.
  */
 @PlaceToken
+@UIScoped
 public class MainPresenter extends Presenter<MainPresenter.MyView> implements MainUiHandlers {
 
     @Inject
-    public MainPresenter(@MVP EventBus eventBus, MyView view) {
+    public MainPresenter(MVPEventBus eventBus, MyView view) {
         super(eventBus, view);
         getView().setUiHandlers(this);
     }

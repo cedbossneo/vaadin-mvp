@@ -18,7 +18,7 @@ package org.vaadin.mvp.core.events;
 
 import com.google.gwt.event.shared.GwtEvent;
 import com.google.gwt.event.shared.HasHandlers;
-import com.google.web.bindery.event.shared.EventBus;
+import org.vaadin.mvp.core.MVPEventBus;
 
 /**
  * Event fired right before any asynchronous call to the server is performed by GWTP MVP.
@@ -36,18 +36,18 @@ public class AsyncCallStartEvent extends GwtEvent<AsyncCallStartHandler> {
 
   /**
    * Fires a {@link AsyncCallStartEvent}
-   * into a source that has access to an {@link com.google.web.bindery.event.shared.EventBus}.
+   * into a source that has access to an {@link org.vaadin.mvp.core.MVPEventBus}.
    *
-   * @param source The source that fires this event ({@link com.google.web.bindery.event.shared.EventBus}).
+   * @param source The source that fires this event ({@link org.vaadin.mvp.core.MVPEventBus}).
    */
-  public static void fire(EventBus source) {
+  public static void fire(MVPEventBus source) {
     source.fireEvent(new AsyncCallStartEvent());
   }
 
   /**
    * Fires a {@link AsyncCallStartEvent}
-   * into a source that has access to an {@link com.google.web.bindery.event.shared.EventBus}.
-   * @deprecated Use {@link #fire(com.google.web.bindery.event.shared.EventBus)} instead.
+   * into a source that has access to an {@link org.vaadin.mvp.core.MVPEventBus}.
+   * @deprecated Use {@link #fire(org.vaadin.mvp.core.MVPEventBus)} instead.
    *
    * @param source The source that fires this event ({@link com.google.gwt.event.shared.HasHandlers}).
    */

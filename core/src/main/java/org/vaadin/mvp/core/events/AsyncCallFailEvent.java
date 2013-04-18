@@ -18,7 +18,7 @@ package org.vaadin.mvp.core.events;
 
 import com.google.gwt.event.shared.GwtEvent;
 import com.google.gwt.event.shared.HasHandlers;
-import com.google.web.bindery.event.shared.EventBus;
+import org.vaadin.mvp.core.MVPEventBus;
 
 /**
  * Event fired after any asynchronous call to the server performed by GWTP MVP returns with
@@ -35,19 +35,19 @@ public class AsyncCallFailEvent extends GwtEvent<AsyncCallFailHandler> {
 
   /**
    * Fires a {@link AsyncCallFailEvent}
-   * into a source that has access to an {@link com.google.web.bindery.event.shared.EventBus}.
+   * into a source that has access to an {@link org.vaadin.mvp.core.MVPEventBus}.
    *
-   * @param source The source that fires this event ({@link com.google.web.bindery.event.shared.EventBus}).
+   * @param source The source that fires this event ({@link org.vaadin.mvp.core.MVPEventBus}).
    * @param caught failure encountered while executing a remote procedure call.
    */
-  public static void fire(EventBus source, Throwable caught) {
+  public static void fire(MVPEventBus source, Throwable caught) {
     source.fireEvent(new AsyncCallFailEvent(caught));
   }
 
   /**
    * Fires a {@link AsyncCallFailEvent}
-   * into a source that has access to an {@link com.google.web.bindery.event.shared.EventBus}.
-   * @deprecated Use {@link #fire(com.google.web.bindery.event.shared.EventBus, Throwable)} instead.
+   * into a source that has access to an {@link org.vaadin.mvp.core.MVPEventBus}.
+   * @deprecated Use {@link #fire(org.vaadin.mvp.core.MVPEventBus, Throwable)} instead.
    *
    * @param source The source that fires this event ({@link com.google.gwt.event.shared.HasHandlers}).
    * @param caught failure encountered while executing a remote procedure call.

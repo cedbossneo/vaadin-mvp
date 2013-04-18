@@ -1,12 +1,15 @@
 package org.vaadin.mvp.generator;
 
-import com.google.web.bindery.event.shared.EventBus;
 import com.sun.codemodel.*;
-import com.vaadin.cdi.CDIView;
-import com.vaadin.navigator.Navigator;
+import com.vaadin.cdi.UIScoped;
+import org.vaadin.mvp.core.MVPEventBus;
+import org.vaadin.mvp.core.MVPNavigator;
 import org.vaadin.mvp.core.annotations.*;
-import org.vaadin.mvp.core.annotations.qualifiers.MVP;
 import org.vaadin.mvp.core.events.GetPlaceTitleEvent;
+import org.vaadin.mvp.core.events.NotifyingAsyncCallback;
+import org.vaadin.mvp.core.events.RevealContentHandler;
+import org.vaadin.mvp.core.places.PlaceImpl;
+import org.vaadin.mvp.core.places.PlaceWithGatekeeper;
 import org.vaadin.mvp.core.proxy.ProxyImpl;
 import org.vaadin.mvp.core.proxy.ProxyPlaceImpl;
 
@@ -14,7 +17,6 @@ import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.Messager;
 import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedAnnotationTypes;
-import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 import javax.lang.model.element.*;
 import javax.lang.model.type.TypeMirror;
@@ -79,15 +81,15 @@ public class ProxyProcessor extends AbstractProcessor {
             return proxies.get(presenter);
         try {
             JDefinedClass proxyClass = jCodeModel._package(((PackageElement)presenter.getEnclosingElement()).getQualifiedName().toString())._class(presenter.getSimpleName() + "Proxy");
-            proxyClass.annotate(Dependent.class);
-            proxyClass = proxyClass._extends(jCodeModel.ref(ProxyImpl.class).narrow(jCodeModel.directClass(presenter.getQualifiedName().toString())));
+            proxyClass.annotate(UIScoped.class);
+            JClass presenterClass = jCodeModel.directClass(presenter.getQualifiedName().toString());
+            proxyClass = proxyClass._extends(jCodeModel.ref(ProxyImpl.class).narrow(presenterClass));
+            proxyClass.method(JMod.PUBLIC, jCodeModel.ref(Class.class).narrow(presenterClass), "getPresenter").body()._return(JExpr.dotclass(presenterClass));
             JMethod constructor = proxyClass.constructor(JMod.PUBLIC);
             constructor.annotate(Inject.class);
-            constructor.param(EventBus.class, "eventBus").annotate(MVP.class);
-            constructor.body().directStatement("super(" + presenter.getQualifiedName().toString() + ".class, eventBus);");
-            String source = registerEventsHandler(presenter, proxyClass);
-            if (source.length() > 0)
-                constructor.body().directStatement(source);
+            JVar eventBusParameter = constructor.param(MVPEventBus.class, "eventBus");
+            constructor.body().invoke("super").arg(eventBusParameter);
+            registerEventsHandler(constructor.body(), presenter, presenterClass, proxyClass);
             proxies.put(presenter.getQualifiedName().toString(), proxyClass);
             return proxyClass;
         } catch (JClassAlreadyExistsException e) {
@@ -100,24 +102,25 @@ public class ProxyProcessor extends AbstractProcessor {
         try{
             String place = presenterType.getAnnotation(PlaceToken.class).value();
             JDefinedClass proxyPlaceClass = jCodeModel._package(((PackageElement) presenterType.getEnclosingElement()).getQualifiedName().toString())._class(presenterType.getSimpleName() + "ProxyPlace");
-            proxyPlaceClass.annotate(CDIView.class).param("value", place);
-            proxyPlaceClass = proxyPlaceClass._extends(jCodeModel.ref(ProxyPlaceImpl.class).narrow(jCodeModel.directClass(presenterType.getQualifiedName().toString())));
+            proxyPlaceClass.annotate(UIScoped.class);
+            JClass presenterJClass = jCodeModel.directClass(presenterType.getQualifiedName().toString());
+            proxyPlaceClass = proxyPlaceClass._extends(jCodeModel.ref(ProxyPlaceImpl.class).narrow(presenterJClass));
             JMethod constructor = proxyPlaceClass.constructor(JMod.PUBLIC);
             constructor.annotate(Inject.class);
-            constructor.param(jCodeModel.ref(proxy.fullName()), "proxy");
-            constructor.param(Navigator.class, "navigator").annotate(MVP.class);
+            JVar proxyParam = constructor.param(jCodeModel.ref(proxy.fullName()), "proxy");
+            JVar navigatorParam = constructor.param(MVPNavigator.class, "navigator");
             if (presenterType.getAnnotation(NoGatekeeper.class) != null){
-                constructor.body().directStatement("super(proxy, new org.vaadin.mvp.core.places.PlaceImpl(\""+place+"\"), navigator);");
+                constructor.body().invoke("super").arg(proxyParam).arg(JExpr._new(jCodeModel.ref(PlaceImpl.class)).arg(place)).arg(navigatorParam);
             }else if (presenterType.getAnnotation(UseGatekeeper.class) != null)
-                constructor.body().directStatement("super(proxy, new org.vaadin.mvp.core.places.PlaceWithGatekeeper(\""+place+"\", new "+presenterType.getAnnotation(UseGatekeeper.class).value().getCanonicalName()+"()), navigator);");
+                constructor.body().invoke("super").arg(proxyParam).arg(JExpr._new(jCodeModel.ref(PlaceWithGatekeeper.class)).arg(place).arg(JExpr._new(jCodeModel.ref(presenterType.getAnnotation(UseGatekeeper.class).value())))).arg(navigatorParam);
             else if (defaultGateKeeper != null)
-                constructor.body().directStatement("super(proxy, new org.vaadin.mvp.core.places.PlaceWithGatekeeper(\""+place+"\", new "+defaultGateKeeper.getQualifiedName().toString()+"()), navigator);");
+                constructor.body().invoke("super").arg(proxyParam).arg(JExpr._new(jCodeModel.ref(PlaceWithGatekeeper.class)).arg(place).arg(JExpr._new(jCodeModel.ref(defaultGateKeeper.getQualifiedName().toString())))).arg(navigatorParam);
             else
-                constructor.body().directStatement("super(proxy, new org.vaadin.mvp.core.places.PlaceImpl(\"" + place + "\"), navigator);");
+                constructor.body().invoke("super").arg(proxyParam).arg(JExpr._new(jCodeModel.ref(PlaceImpl.class)).arg(place)).arg(navigatorParam);
             if (presenterType.getAnnotation(Title.class) != null){
                 JMethod placeTitle = proxyPlaceClass.method(JMod.PROTECTED, void.class, "getPlaceTitle");
-                placeTitle.param(GetPlaceTitleEvent.class, "event");
-                placeTitle.body().directStatement("event.getHandler().onSetPlaceTitle(\"" + presenterType.getAnnotation(Title.class).value() + "\");");
+                JVar eventParam = placeTitle.param(GetPlaceTitleEvent.class, "event");
+                placeTitle.body().invoke(eventParam, "getHandler").invoke("onSetPlaceTitle").arg(presenterType.getAnnotation(Title.class).value());
             }
             List<? extends Element> methods = presenterType.getEnclosedElements();
             for (Element method : methods) {
@@ -125,7 +128,7 @@ public class ProxyProcessor extends AbstractProcessor {
                     continue;
                 if (method.getAnnotation(ContentSlot.class) == null)
                     continue;
-                constructor.body().directStatement("proxy.getEventBus().addHandler("+presenterType.getQualifiedName().toString()+"."+method.getSimpleName()+"(), new org.vaadin.mvp.core.events.RevealContentHandler<"+presenterType.getQualifiedName().toString()+">(proxy.getEventBus(), proxy));");
+                constructor.body().add(JExpr.invoke(proxyParam, "getEventBus").invoke("addHandler").arg(presenterJClass.staticInvoke(method.getSimpleName().toString())).arg(JExpr._new(jCodeModel.ref(RevealContentHandler.class).narrow(presenterJClass)).arg(proxyParam.invoke("getEventBus")).arg(proxyParam)));
             }
         return proxyPlaceClass;
     } catch (Exception e) {
@@ -134,8 +137,7 @@ public class ProxyProcessor extends AbstractProcessor {
         return null;
     }
 
-    private String registerEventsHandler(TypeElement presenter, JDefinedClass proxyClass) {
-        StringBuffer stringBuffer = new StringBuffer();
+    private void registerEventsHandler(JBlock constructoryBody, TypeElement presenter, JClass presenterClass, JDefinedClass proxyClass) {
         List<? extends Element> methods = presenter.getEnclosedElements();
         for (Element methodElement : methods) {
             if (!(methodElement instanceof ExecutableElement))
@@ -148,17 +150,15 @@ public class ProxyProcessor extends AbstractProcessor {
                     proxyClass._implements(jCodeModel.directClass(handler.getQualifiedName().toString()));
                     String event = ((TypeElement)processingEnv.getTypeUtils().asElement(firstParameter.asType())).getQualifiedName().toString();
                     JMethod eventMethod = proxyClass.method(JMod.PUBLIC, void.class, method.getSimpleName().toString());
-                    eventMethod.param(JMod.FINAL, jCodeModel.directClass(event), "event");
-                    eventMethod.body().directStatement("getPresenter(new org.vaadin.mvp.core.events.NotifyingAsyncCallback<"+presenter.getQualifiedName().toString()+">(getEventBus()) {\n" +
-                            "          @Override\n" +
-                            "          protected void success("+presenter.getQualifiedName().toString()+" result) {\n" +
-                            "              result."+method.getSimpleName().toString()+"(event);"+
-                            "          }\n" +
-                            "      });");
-                    stringBuffer.append("getEventBus().addHandler(" + event + ".getType(), this);");
+                    JVar eventParam = eventMethod.param(JMod.FINAL, jCodeModel.directClass(event), "event");
+                    JDefinedClass innerClass = jCodeModel.anonymousClass(jCodeModel.ref(NotifyingAsyncCallback.class).narrow(presenterClass));
+                    JMethod successMethod = innerClass.method(JMod.PROTECTED, void.class, "success");
+                    JVar resultParam = successMethod.param(presenterClass, "result");
+                    successMethod.body().invoke(resultParam, method.getSimpleName().toString()).arg(eventParam);
+                    eventMethod.body().invoke("getPresenter").arg(JExpr._new(innerClass).arg(JExpr.invoke("getEventBus")));
+                    constructoryBody.add(JExpr.invoke("getEventBus").invoke("addHandler").arg(jCodeModel.directClass(event).staticInvoke("getType")).arg(JExpr._this()));
             }
         }
-        return stringBuffer.toString();
     }
 
     private TypeElement getHandler(TypeElement presenter, ExecutableElement method) {

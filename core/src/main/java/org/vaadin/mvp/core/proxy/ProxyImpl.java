@@ -17,13 +17,16 @@
 package org.vaadin.mvp.core.proxy;
 
 import com.google.gwt.event.shared.GwtEvent;
-import com.google.web.bindery.event.shared.EventBus;
-import com.vaadin.server.VaadinSession;
-import org.vaadin.mvp.core.MVP;
+import org.vaadin.mvp.core.MVPEventBus;
 import org.vaadin.mvp.core.events.NotifyingAsyncCallback;
 import org.vaadin.mvp.core.presenters.Presenter;
 
-import java.lang.reflect.InvocationTargetException;
+import javax.enterprise.context.spi.CreationalContext;
+import javax.enterprise.inject.spi.Bean;
+import javax.enterprise.inject.spi.BeanManager;
+import javax.inject.Inject;
+import java.util.Set;
+import java.util.logging.Logger;
 
 /**
  * @author Philippe Beaudoin
@@ -32,36 +35,52 @@ import java.lang.reflect.InvocationTargetException;
  */
 public class ProxyImpl<P extends Presenter<?>> implements Proxy<P> {
 
-  protected EventBus eventBus;
-  private Class<P> presenterClass;
+    @Inject
+    BeanManager beanManager;
+
+  protected MVPEventBus eventBus;
+    private CreationalContext<?> creationalContext;
 
     /**
    * Creates a Proxy class for a specific presenter.
    */
-  public ProxyImpl(Class<P> presenterClass, EventBus eventBus) {
-      this.presenterClass = presenterClass;
+  public ProxyImpl(MVPEventBus eventBus) {
       this.eventBus = eventBus;
   }
 
   @Override
   public void getPresenter(NotifyingAsyncCallback<P> callback) {
     callback.prepare();
-    MVP mvp = (MVP) VaadinSession.getCurrent().getAttribute("mvp");
-    mvp.getPresenter(presenterClass, callback);
+    callback.checkLoading();
+      Set<Bean<?>> presenters = beanManager.getBeans(getPresenter());
+      Bean<?> presenterBean = null;
+      if (presenters.size() != 1)
+          callback.onFailure(new Throwable("Found none or more than one presenter for " + getPresenter().toString()));
+      else
+        presenterBean = presenters.iterator().next();
+      if (creationalContext == null) {
+          creationalContext = beanManager.createCreationalContext(presenterBean);
+      }
+      P presenterInstance = (P) beanManager.getReference(presenterBean, getPresenter(), creationalContext);
+      if (presenterInstance != null){
+          Logger.getLogger(getClass().getName()).fine("New presenter created: " + presenterInstance.getClass().getName());
+          callback.onSuccess(presenterInstance);
+      }else
+          callback.onFailure(new Throwable("Error while getting bean"));
     callback.checkLoading();
   }
 
-  @Override
+    public Class<P> getPresenter() {
+        return null;
+    }
+
+    @Override
   public void fireEvent(GwtEvent<?> event) {
-    eventBus.fireEventFromSource(event, this);
+        eventBus.fireEventFromSource(event, this);
   }
 
   @Override
-  public final EventBus getEventBus() {
+  public final MVPEventBus getEventBus() {
     return eventBus;
   }
-
-    public Class<P> getPresenterClass() {
-        return presenterClass;
-    }
 }

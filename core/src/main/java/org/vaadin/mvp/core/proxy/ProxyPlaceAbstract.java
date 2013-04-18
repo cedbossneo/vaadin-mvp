@@ -17,8 +17,8 @@
 package org.vaadin.mvp.core.proxy;
 
 import com.google.gwt.event.shared.GwtEvent;
-import com.google.web.bindery.event.shared.EventBus;
-import com.vaadin.navigator.Navigator;
+import org.vaadin.mvp.core.MVPEventBus;
+import org.vaadin.mvp.core.MVPNavigator;
 import com.vaadin.navigator.ViewChangeListener;
 import org.vaadin.mvp.core.events.*;
 import org.vaadin.mvp.core.places.Place;
@@ -40,10 +40,10 @@ public class ProxyPlaceAbstract<P extends Presenter<?>, Proxy_ extends Proxy<P>>
     implements ProxyPlace<P> {
 
   protected Place place;
-  protected Navigator navigator;
+  protected MVPNavigator navigator;
   protected Proxy_ proxy;
 
-  private EventBus eventBus;
+  private MVPEventBus eventBus;
 
   /**
    * Creates a {@link ProxyPlaceAbstract}. That is, the {@link Proxy} of a
@@ -51,7 +51,7 @@ public class ProxyPlaceAbstract<P extends Presenter<?>, Proxy_ extends Proxy<P>>
    * invoked by setting a history token that matches its name token in the URL
    * bar.
    */
-  public ProxyPlaceAbstract(Proxy_ proxy, Place place, final Navigator navigator) {
+  public ProxyPlaceAbstract(Proxy_ proxy, Place place, final MVPNavigator navigator) {
       this.proxy = proxy;
       this.place = place;
       this.navigator = navigator;
@@ -72,6 +72,7 @@ public class ProxyPlaceAbstract<P extends Presenter<?>, Proxy_ extends Proxy<P>>
                       }
                   }
               });
+      navigator.addView(place.getNameToken(), this);
   }
 
   @Override
@@ -93,7 +94,7 @@ public class ProxyPlaceAbstract<P extends Presenter<?>, Proxy_ extends Proxy<P>>
   }
 
   @Override
-  public final EventBus getEventBus() {
+  public final MVPEventBus getEventBus() {
     return eventBus;
   }
 
@@ -109,11 +110,6 @@ public class ProxyPlaceAbstract<P extends Presenter<?>, Proxy_ extends Proxy<P>>
   public void getPresenter(NotifyingAsyncCallback<P> callback) {
     proxy.getPresenter(callback);
   }
-
-    @Override
-    public Class<P> getPresenterClass() {
-        return proxy.getPresenterClass();
-    }
 
     @Override
   public final int hashCode() {

@@ -1,6 +1,7 @@
 package org.vaadin.mvp.core;
 
 import com.google.web.bindery.event.shared.SimpleEventBus;
+import com.vaadin.cdi.UIScoped;
 
 import java.io.Serializable;
 import java.util.logging.Logger;
@@ -12,6 +13,7 @@ import java.util.logging.Logger;
  * Time: 22:56
  * To change this template use File | Settings | File Templates.
  */
+@UIScoped
 public class MVPEventBus extends SimpleEventBus implements Serializable {
     public MVPEventBus() {
         Logger.getLogger("MVPEventBus").info("New MVPEventBus");

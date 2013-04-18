@@ -19,7 +19,6 @@ package org.vaadin.mvp.core.events;
 import com.google.gwt.event.shared.GwtEvent;
 import com.google.gwt.event.shared.HasHandlers;
 import org.vaadin.mvp.core.presenters.Presenter;
-import org.vaadin.mvp.core.presenters.Presenter;
 
 /**
  * This event is fired by a {@link org.vaadin.mvp.core.presenters.Presenter} that desires to reveal itself
@@ -41,7 +40,7 @@ public final class RevealRootContentEvent extends
 
   /**
    * Fires a {@link RevealRootContentEvent}
-   * into a source that has access to an {@link com.google.web.bindery.event.shared.EventBus}.
+   * into a source that has access to an {@link org.vaadin.mvp.core.MVPEventBus}.
    *
    * @param source The source that fires this event ({@link com.google.gwt.event.shared.HasHandlers}).
    * @param content The {@link org.vaadin.mvp.core.presenters.Presenter} that wants to set itself as root content.

@@ -17,12 +17,9 @@
 package org.vaadin.mvp.core.proxy;
 
 import com.google.gwt.event.shared.HasHandlers;
-import com.google.web.bindery.event.shared.EventBus;
-import org.vaadin.mvp.core.presenters.Presenter;
+import org.vaadin.mvp.core.MVPEventBus;
 import org.vaadin.mvp.core.events.NotifyingAsyncCallback;
 import org.vaadin.mvp.core.presenters.Presenter;
-
-import java.io.Serializable;
 
 import java.io.Serializable;
 
@@ -44,12 +41,12 @@ import java.io.Serializable;
 public interface Proxy<P extends Presenter<?>> extends HasHandlers, Serializable {
 
   /**
-   * Makes it possible to access the {@link com.google.web.bindery.event.shared.EventBus} object associated with
+   * Makes it possible to access the {@link org.vaadin.mvp.core.MVPEventBus} object associated with
    * that proxy.
    *
-   * @return The {@link com.google.web.bindery.event.shared.EventBus} associated with that proxy.
+   * @return The {@link org.vaadin.mvp.core.MVPEventBus} associated with that proxy.
    */
-  EventBus getEventBus();
+  MVPEventBus getEventBus();
 
   /**
    * Get the associated {@link org.vaadin.mvp.core.presenters.Presenter}. The presenter can only be obtained in
@@ -60,6 +57,4 @@ public interface Proxy<P extends Presenter<?>> extends HasHandlers, Serializable
    *          as a parameter.
    */
   void getPresenter(NotifyingAsyncCallback<P> callback);
-
-  public Class<P> getPresenterClass();
 }
