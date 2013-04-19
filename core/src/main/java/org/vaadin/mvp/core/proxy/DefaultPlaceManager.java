@@ -16,13 +16,12 @@
 
 package org.vaadin.mvp.core.proxy;
 
+import com.vaadin.cdi.UIScoped;
 import org.vaadin.mvp.core.MVPEventBus;
-import org.vaadin.mvp.core.MVPNavigator;
 import org.vaadin.mvp.core.annotations.DefaultPlace;
 import org.vaadin.mvp.core.annotations.ErrorPlace;
 import org.vaadin.mvp.core.annotations.UnauthorizedPlace;
 
-import javax.enterprise.inject.Alternative;
 import javax.inject.Inject;
 
 /**
@@ -46,6 +45,7 @@ import javax.inject.Inject;
  * <li>The user clicks the back button in his browser, lands in #admin, then #unauthorized, then #admin, and so on.</li>
  * </ol>
  */
+@UIScoped
 public class DefaultPlaceManager extends PlaceManagerImpl {
     private final PlaceRequest defaultPlaceRequest;
     private final PlaceRequest errorPlaceRequest;
@@ -54,12 +54,10 @@ public class DefaultPlaceManager extends PlaceManagerImpl {
     @Inject
     public DefaultPlaceManager(MVPEventBus eventBus,
                                TokenFormatter tokenFormatter,
-                               MVPNavigator navigator,
                                @DefaultPlace String defaultPlaceNameToken,
                                @ErrorPlace String errorPlaceNameToken,
                                @UnauthorizedPlace String unauthorizedPlaceNameToken) {
-        super(eventBus, tokenFormatter, navigator);
-
+        super(eventBus, tokenFormatter);
         defaultPlaceRequest = new PlaceRequest(defaultPlaceNameToken);
         errorPlaceRequest = new PlaceRequest(errorPlaceNameToken);
         unauthorizedPlaceRequest = new PlaceRequest(unauthorizedPlaceNameToken);

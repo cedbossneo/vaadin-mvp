@@ -21,6 +21,7 @@ import com.vaadin.server.VaadinSession;
 import org.vaadin.mvp.core.annotations.DefaultPlace;
 import org.vaadin.mvp.core.annotations.ErrorPlace;
 import org.vaadin.mvp.core.annotations.UnauthorizedPlace;
+import org.vaadin.mvp.core.proxy.PlaceManager;
 import org.vaadin.mvp.core.proxy.ProxyPlace;
 
 import javax.enterprise.inject.Produces;
@@ -38,6 +39,8 @@ public class MVP implements Serializable {
 
     @Inject
     Provider<RootPresenter> rootPresenterProvider;
+    @Inject
+    Provider<PlaceManager> placeManagerProvider;
     RootPresenter rootPresenter;
 
     public void init() {
@@ -47,17 +50,24 @@ public class MVP implements Serializable {
         for (Bean<?> proxy : proxies) {
             beanManager.getReference(proxy, proxy.getBeanClass(), beanManager.createCreationalContext(proxy));
         }
+        placeManagerProvider.get().revealCurrentPlace();
     }
 
     @Produces
     @DefaultPlace
-    String defaultPlaceNameToken = "";
+    String getDefaultPlaceNameToken() {
+        return "";
+    }
 
     @Produces
     @ErrorPlace
-    String errorPlaceNameToken = "error";
+    String getErrorPlaceNameToken() {
+        return "error";
+    }
 
     @Produces
     @UnauthorizedPlace
-    String unauthorizedPlaceNameToken = "unauthorized";
+    String getUnauthorizedPlaceNameToken() {
+        return "unauthorized";
+    }
 }

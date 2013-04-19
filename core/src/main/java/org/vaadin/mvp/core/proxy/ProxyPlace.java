@@ -16,7 +16,6 @@
 
 package org.vaadin.mvp.core.proxy;
 
-import com.vaadin.navigator.View;
 import org.vaadin.mvp.core.Presenter;
 
 /**
@@ -25,7 +24,7 @@ import org.vaadin.mvp.core.Presenter;
  * @param <P> The type of the {@link Presenter} associated with this proxy.
  * @author Philippe Beaudoin
  */
-public interface ProxyPlace<P extends Presenter<?, ?>> extends Proxy<P>, Place, View {
+public interface ProxyPlace<P extends Presenter<?, ?>> extends Proxy<P>, Place {
 
     /**
      * Manually reveals a presenter. Only use this method if your presenter is configured

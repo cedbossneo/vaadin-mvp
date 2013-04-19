@@ -16,11 +16,9 @@
 
 package org.vaadin.mvp.core.proxy;
 
-import com.google.gwt.http.client.URL;
-
-import javax.enterprise.inject.Alternative;
-import javax.enterprise.inject.Specializes;
 import javax.inject.Inject;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -108,16 +106,16 @@ public class ParameterTokenFormatter implements TokenFormatter {
      *                           a 1-character string and can't be {@code %}.
      */
     public ParameterTokenFormatter(String hierarchySeparator, String paramSeparator,
-            String valueSeparator) {
+                                   String valueSeparator) {
         assert hierarchySeparator.length() == 1;
         assert paramSeparator.length() == 1;
         assert valueSeparator.length() == 1;
         assert !hierarchySeparator.equals(paramSeparator);
         assert !hierarchySeparator.equals(valueSeparator);
         assert !paramSeparator.equals(valueSeparator);
-        assert !valueSeparator.equals(URL.encodeQueryString(valueSeparator));
-        assert !hierarchySeparator.equals(URL.encodeQueryString(hierarchySeparator));
-        assert !paramSeparator.equals(URL.encodeQueryString(paramSeparator));
+        assert !valueSeparator.equals(URLEncoder.encode(valueSeparator));
+        assert !hierarchySeparator.equals(URLEncoder.encode(hierarchySeparator));
+        assert !paramSeparator.equals(URLEncoder.encode(paramSeparator));
         assert !hierarchySeparator.equals("%");
         assert !paramSeparator.equals("%");
         assert !valueSeparator.equals("%");
@@ -144,7 +142,7 @@ public class ParameterTokenFormatter implements TokenFormatter {
 
     @Override
     public PlaceRequest toPlaceRequest(String placeToken) throws TokenFormatException {
-        return unescapedStringToPlaceRequest(URL.decodeQueryString(placeToken));
+        return unescapedStringToPlaceRequest(URLDecoder.decode(placeToken));
     }
 
     /**
@@ -198,7 +196,7 @@ public class ParameterTokenFormatter implements TokenFormatter {
 
     @Override
     public List<PlaceRequest> toPlaceRequestHierarchy(String historyToken) throws TokenFormatException {
-        String unescapedHistoryToken = URL.decodeQueryString(historyToken);
+        String unescapedHistoryToken = URLDecoder.decode(historyToken);
 
         int split = unescapedHistoryToken.indexOf(hierarchySeparator);
         List<PlaceRequest> result = new ArrayList<PlaceRequest>();
@@ -281,7 +279,7 @@ public class ParameterTokenFormatter implements TokenFormatter {
             }
         }
 
-        return URL.encodeQueryString(sbuf.toString());
+        return URLEncoder.encode(sbuf.toString());
     }
 
     /**

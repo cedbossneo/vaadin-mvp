@@ -17,7 +17,6 @@
 package org.vaadin.mvp.core.proxy;
 
 import org.vaadin.mvp.core.MVPEventBus;
-import org.vaadin.mvp.core.MVPNavigator;
 import org.vaadin.mvp.core.Presenter;
 
 /**
@@ -38,7 +37,7 @@ public class ProxyPlaceImpl<P extends Presenter<?, ?>> extends
      * invoked by setting a history token that matches its name token in the URL
      * bar.
      */
-    public ProxyPlaceImpl(MVPEventBus eventBus, MVPNavigator navigator) {
-        super(eventBus, navigator);
+    public ProxyPlaceImpl(MVPEventBus eventBus) {
+        super(eventBus);
     }
 }

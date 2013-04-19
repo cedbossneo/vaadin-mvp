@@ -16,7 +16,10 @@
 
 package org.vaadin.mvp.core.proxy;
 
-import org.vaadin.mvp.core.*;
+import org.vaadin.mvp.core.MVPEventBus;
+import org.vaadin.mvp.core.Presenter;
+import org.vaadin.mvp.core.Tab;
+import org.vaadin.mvp.core.TabData;
 
 /**
  * A useful mixing class to define a {@link TabContentProxy} that is also a
@@ -35,8 +38,8 @@ public class TabContentProxyPlaceImpl<T extends Presenter<?, ?>> extends
      * invoked by setting a history token that matches its name token in the URL
      * bar.
      */
-    public TabContentProxyPlaceImpl(MVPEventBus eventBus, MVPNavigator navigator) {
-        super(eventBus, navigator);
+    public TabContentProxyPlaceImpl(MVPEventBus eventBus) {
+        super(eventBus);
     }
 
     @Override

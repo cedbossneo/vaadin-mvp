@@ -3,7 +3,6 @@ package org.vaadin.mvp.generator;
 import com.sun.codemodel.*;
 import com.vaadin.cdi.UIScoped;
 import org.vaadin.mvp.core.MVPEventBus;
-import org.vaadin.mvp.core.MVPNavigator;
 import org.vaadin.mvp.core.annotations.*;
 import org.vaadin.mvp.core.proxy.*;
 
@@ -141,9 +140,8 @@ public class ProxyProcessor extends AbstractProcessor {
             JMethod constructor = proxyPlaceClass.constructor(JMod.PUBLIC);
             constructor.annotate(Inject.class);
             JVar proxyParam = constructor.param(jCodeModel.ref(proxy.fullName()), "proxy");
-            JVar navigatorParameter = constructor.param(MVPNavigator.class, "navigator");
             JVar placeManagerParam = constructor.param(PlaceManager.class, "placeManager");
-            constructor.body().invoke("super").arg(proxyParam.invoke("getEventBus")).arg(navigatorParameter);
+            constructor.body().invoke("super").arg(proxyParam.invoke("getEventBus"));
             constructor.body().add(JExpr.invoke("setProxy").arg(proxyParam));
             constructor.body().add(JExpr.invoke("setPlaceManager").arg(placeManagerParam));
             if (presenterType.getAnnotation(NoGatekeeper.class) != null) {

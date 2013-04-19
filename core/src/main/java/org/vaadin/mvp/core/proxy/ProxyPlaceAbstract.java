@@ -17,9 +17,7 @@
 package org.vaadin.mvp.core.proxy;
 
 import com.google.gwt.event.shared.GwtEvent;
-import com.vaadin.navigator.ViewChangeListener;
 import org.vaadin.mvp.core.MVPEventBus;
-import org.vaadin.mvp.core.MVPNavigator;
 import org.vaadin.mvp.core.Presenter;
 
 /**
@@ -41,7 +39,6 @@ public class ProxyPlaceAbstract<P extends Presenter<?, ?>, Proxy_ extends Proxy<
     private Proxy_ proxy;
 
     private MVPEventBus eventBus;
-    private MVPNavigator navigator;
 
     /**
      * Creates a {@link ProxyPlaceAbstract}. That is, the {@link Proxy} of a
@@ -49,9 +46,8 @@ public class ProxyPlaceAbstract<P extends Presenter<?, ?>, Proxy_ extends Proxy<
      * invoked by setting a history token that matches its name token in the URL
      * bar.
      */
-    public ProxyPlaceAbstract(MVPEventBus eventBus, MVPNavigator navigator) {
+    public ProxyPlaceAbstract(MVPEventBus eventBus) {
         this.eventBus = eventBus;
-        this.navigator = navigator;
         eventBus.addHandler(PlaceRequestInternalEvent.getType(),
                 new PlaceRequestInternalHandler() {
                     @Override
@@ -156,7 +152,6 @@ public class ProxyPlaceAbstract<P extends Presenter<?, ?>, Proxy_ extends Proxy<
 
     protected void setPlace(Place place) {
         this.place = place;
-        navigator.addView(place.getNameToken(), this);
     }
 
     protected PlaceManager getPlaceManager() {
@@ -247,10 +242,5 @@ public class ProxyPlaceAbstract<P extends Presenter<?, ?>, Proxy_ extends Proxy<
     @Override
     public void manualRevealFailed() {
         placeManager.unlock();
-    }
-
-    @Override
-    public void enter(ViewChangeListener.ViewChangeEvent event) {
-
     }
 }

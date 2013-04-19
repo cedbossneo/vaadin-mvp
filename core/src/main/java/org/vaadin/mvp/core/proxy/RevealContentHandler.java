@@ -16,9 +16,7 @@
 
 package org.vaadin.mvp.core.proxy;
 
-import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.event.shared.EventHandler;
-import com.google.gwt.user.client.Command;
 import org.vaadin.mvp.core.MVPEventBus;
 import org.vaadin.mvp.core.Presenter;
 
@@ -37,7 +35,7 @@ public class RevealContentHandler<T extends Presenter<?, ?>> implements EventHan
     private final ProxyImpl<T> proxy;
 
     public RevealContentHandler(final MVPEventBus eventBus,
-            final ProxyImpl<T> proxy) {
+                                final ProxyImpl<T> proxy) {
         this.eventBus = eventBus;
         this.proxy = proxy;
     }
@@ -59,14 +57,9 @@ public class RevealContentHandler<T extends Presenter<?, ?>> implements EventHan
                 // So if a presenter registers a handler in its onBind() method and a
                 // child fires the event in its onReveal() method, then the event might
                 // get lost because the handler is not officially registered yet.
-                Scheduler.get().scheduleDeferred(new Command() {
-                    @Override
-                    public void execute() {
-                        presenter.forceReveal();
-                        presenter.setInSlot(revealContentEvent.getAssociatedType(),
-                                revealContentEvent.getContent());
-                    }
-                });
+                presenter.forceReveal();
+                presenter.setInSlot(revealContentEvent.getAssociatedType(),
+                        revealContentEvent.getContent());
             }
         });
     }

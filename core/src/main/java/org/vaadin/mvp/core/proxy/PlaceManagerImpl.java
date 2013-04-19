@@ -18,9 +18,9 @@ package org.vaadin.mvp.core.proxy;
 
 import com.google.gwt.event.shared.GwtEvent;
 import com.google.gwt.user.client.Command;
-import com.vaadin.navigator.ViewChangeListener;
+import com.vaadin.server.Page;
+import com.vaadin.ui.UI;
 import org.vaadin.mvp.core.MVPEventBus;
-import org.vaadin.mvp.core.MVPNavigator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,9 +31,9 @@ import java.util.List;
  * @author Philippe Beaudoin
  * @author Christian Goudreau
  */
-public abstract class PlaceManagerImpl implements PlaceManager,
-        ViewChangeListener {
+public abstract class PlaceManagerImpl implements PlaceManager, Page.UriFragmentChangedListener {
 
+    private final Page page;
     private MVPEventBus eventBus;
     private String currentHistoryToken = "";
 
@@ -41,53 +41,51 @@ public abstract class PlaceManagerImpl implements PlaceManager,
     private List<PlaceRequest> placeHierarchy = new ArrayList<PlaceRequest>();
 
     private TokenFormatter tokenFormatter;
-    private MVPNavigator navigator;
 
     private boolean locked;
     private Command defferedNavigation;
 
-    public PlaceManagerImpl(MVPEventBus eventBus, TokenFormatter tokenFormatter, MVPNavigator navigator) {
+    public PlaceManagerImpl(MVPEventBus eventBus, TokenFormatter tokenFormatter) {
         this.eventBus = eventBus;
         this.tokenFormatter = tokenFormatter;
-        this.navigator = navigator;
-        registerTowardsHistory();
+        page = UI.getCurrent().getPage();
+        page.addUriFragmentChangedListener(this);
+    }
+
+    public Page getPage() {
+        return page;
     }
 
     @Override
-    public boolean beforeViewChange(final ViewChangeEvent event) {
+    public void uriFragmentChanged(final Page.UriFragmentChangedEvent event) {
+        String uriFragment = event.getUriFragment();
+        if (uriFragment == null)
+            uriFragment = "";
         if (locked) {
             defferedNavigation = new Command() {
                 @Override
                 public void execute() {
-                    navigator.navigateTo(event.getViewName());
+                    uriFragmentChanged(event);
                 }
             };
-            return false;
+            return;
         }
         if (!getLock()) {
-            return false;
+            return;
         }
-        String historyToken = event.getViewName();
         try {
-            if (historyToken.trim().equals("")) {
+            if (uriFragment.trim().equals("")) {
                 unlock();
                 revealDefaultPlace();
             } else {
-                placeHierarchy = tokenFormatter.toPlaceRequestHierarchy(historyToken);
+                placeHierarchy = tokenFormatter.toPlaceRequestHierarchy(uriFragment);
                 doRevealPlace(getCurrentPlaceRequest(), true);
             }
-            return true;
         } catch (TokenFormatException e) {
             unlock();
-            error(historyToken);
+            error(uriFragment);
             NavigationEvent.fire(this, null);
         }
-        return false;
-    }
-
-    @Override
-    public void afterViewChange(ViewChangeEvent event) {
-        //TODO place google analytics here
     }
 
     @Override
@@ -118,7 +116,7 @@ public abstract class PlaceManagerImpl implements PlaceManager,
 
     @Override
     public void navigateBack() {
-        navigator.navigateTo(currentHistoryToken);
+        page.setUriFragment(currentHistoryToken);
     }
 
     /**
@@ -242,13 +240,9 @@ public abstract class PlaceManagerImpl implements PlaceManager,
         }
     }
 
-    void registerTowardsHistory() {
-        navigator.addViewChangeListener(this);
-    }
-
     @Override
     public void revealCurrentPlace() {
-        navigator.navigateTo(navigator.getState());
+        uriFragmentChanged(new Page.UriFragmentChangedEvent(page, page.getUriFragment()));
     }
 
     @Override
@@ -369,7 +363,7 @@ public abstract class PlaceManagerImpl implements PlaceManager,
     }
 
     void setBrowserHistoryToken(String historyToken) {
-        navigator.navigateTo(historyToken);
+        page.setUriFragment(historyToken, false);
     }
 
     /**
@@ -421,7 +415,7 @@ public abstract class PlaceManagerImpl implements PlaceManager,
             placeHierarchy.set(placeHierarchy.size() - 1, request);
             if (updateBrowserUrl) {
                 String historyToken = tokenFormatter.toHistoryToken(placeHierarchy);
-                String browserHistoryToken = navigator.getState();
+                String browserHistoryToken = page.getUriFragment();
                 if (browserHistoryToken == null
                         || !browserHistoryToken.equals(historyToken)) {
                     setBrowserHistoryToken(historyToken);
