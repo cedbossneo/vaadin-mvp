@@ -1,5 +1,8 @@
-/**
- * Copyright 2011 ArcBees Inc.
+/*
+ * Copyright 2013 Cedric Hauber.
+ *
+ * Some methods, files, concepts came from ArcBees Inc.
+ * http://code.google.com/p/gwt-platform/
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -19,7 +22,6 @@ package org.vaadin.mvp.core;
 import com.vaadin.cdi.UIScoped;
 
 import javax.inject.Inject;
-import javax.inject.Singleton;
 
 /**
  * Bind this class to indicate that you wish to globally disable automatic binding in

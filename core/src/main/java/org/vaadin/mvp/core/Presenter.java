@@ -1,5 +1,8 @@
-/**
- * Copyright 2011 ArcBees Inc.
+/*
+ * Copyright 2013 Cedric Hauber.
+ *
+ * Some methods, files, concepts came from ArcBees Inc.
+ * http://code.google.com/p/gwt-platform/
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -17,13 +20,7 @@
 package org.vaadin.mvp.core;
 
 import com.google.gwt.event.shared.GwtEvent;
-import org.vaadin.mvp.core.proxy.PlaceRequest;
-import org.vaadin.mvp.core.proxy.Proxy;
-import org.vaadin.mvp.core.proxy.RevealContentEvent;
-import org.vaadin.mvp.core.proxy.RevealContentHandler;
-import org.vaadin.mvp.core.proxy.RevealRootContentEvent;
-import org.vaadin.mvp.core.proxy.RevealRootLayoutContentEvent;
-import org.vaadin.mvp.core.proxy.RevealRootPopupContentEvent;
+import org.vaadin.mvp.core.proxy.*;
 
 /**
  * A singleton presenter, the basic building block of the
@@ -59,10 +56,7 @@ import org.vaadin.mvp.core.proxy.RevealRootPopupContentEvent;
  *   }
  * }
  * </pre>
- * One of {@link org.vaadin.mvp.core.annotations.ProxyStandard ProxyStandard},
- * {@link org.vaadin.mvp.core.annotations.ProxyCodeSplit ProxyCodeSplit} or
- * {@link org.vaadin.mvp.core.annotations.ProxyCodeSplitBundle ProxyCodeSplitBundle}
- * must always annotate the {@link Proxy} interface.
+ * {@link Proxy} interface.
  * <p/>
  * To reveal a presenter associated to a {@link org.vaadin.mvp.core.proxy.ProxyPlace ProxyPlace}
  * you can simply navigate to an hyperlink corresponding to this place's name token. The
@@ -71,12 +65,12 @@ import org.vaadin.mvp.core.proxy.RevealRootPopupContentEvent;
  * {@link org.vaadin.mvp.core.proxy.PlaceRequest PlaceRequest} and call one of the
  * following method:
  * <ul>
- * <li>{@link org.vaadin.mvp.core.proxy.PlaceManager#revealPlace(org.vaadin.mvp.core.proxy
- * .PlaceRequest) PlaceManager.revealPlace(PlaceRequest)}</li>
- * <li>{@link org.vaadin.mvp.core.proxy.PlaceManager#revealRelativePlace(org.vaadin.mvp.core.proxy
- * .PlaceRequest) PlaceManager.revealRelativePlace(PlaceRequest)}</li>
- * <li>{@link org.vaadin.mvp.core.proxy.PlaceManager#revealRelativePlace(org.vaadin.mvp.core.proxy
- * .PlaceRequest, int) PlaceManager.revealRelativePlace(PlaceRequest, int)}</li>
+ * <li>{@link org.vaadin.mvp.core.proxy.PlaceManager#revealPlace(org.vaadin.mvp.core.proxy.PlaceRequest)}
+ * PlaceManager.revealPlace(PlaceRequest)}</li>
+ * <li>{@link org.vaadin.mvp.core.proxy.PlaceManager#revealRelativePlace(org.vaadin.mvp.core.proxy.PlaceRequest)}
+ * PlaceManager.revealRelativePlace(PlaceRequest)}</li>
+ * <li>{@link org.vaadin.mvp.core.proxy.PlaceManager#revealRelativePlace(org.vaadin.mvp.core.proxy.PlaceRequest, int)}
+ * PlaceManager.revealRelativePlace(PlaceRequest, int)}</li>
  * </ul>
  * If the presenter is associated to a regular {@link Proxy} and does not have
  * a name token then you should call the {@link #forceReveal()} method. For such
@@ -206,7 +200,7 @@ public abstract class Presenter<V extends View, Proxy_ extends Proxy<?>> extends
      * @param view     The {@link View}.
      * @param proxy    The {@link Proxy}.
      * @param slot     The slot where to reveal this presenter see {@see com.google.gwt.event.shared.GwtEvent.Type} and
-     * {@see RevealContentHandler}.
+     *                 {@see RevealContentHandler}.
      */
     public Presenter(MVPEventBus eventBus, V view, Proxy_ proxy, GwtEvent.Type<RevealContentHandler<?>> slot) {
         this(eventBus, view, proxy, null, slot);
@@ -226,7 +220,7 @@ public abstract class Presenter<V extends View, Proxy_ extends Proxy<?>> extends
      *                   and {@see RevealContentHandler}.
      */
     public Presenter(MVPEventBus eventBus, V view, Proxy_ proxy, RevealType revealType,
-            GwtEvent.Type<RevealContentHandler<?>> slot) {
+                     GwtEvent.Type<RevealContentHandler<?>> slot) {
         super(eventBus, view);
         this.proxy = proxy;
         this.revealType = revealType;
@@ -336,7 +330,7 @@ public abstract class Presenter<V extends View, Proxy_ extends Proxy<?>> extends
      * Returns the slot where this presenter is to be revealed.
      *
      * @return The slot where to reveal this presenter see {@see com.google.gwt.event.shared.GwtEvent.Type} and {@see
-     * RevealContentHandler}.
+     *         RevealContentHandler}.
      */
     protected GwtEvent.Type<RevealContentHandler<?>> getSlot() {
         return slot;
@@ -347,7 +341,7 @@ public abstract class Presenter<V extends View, Proxy_ extends Proxy<?>> extends
      * The slot is ignored in {@link #revealInParent()} if the parent type is not null.
      *
      * @param slot The slot where to reveal this presenter see {@see com.google.gwt.event.shared.GwtEvent.Type} and
-     * {@see RevealContentHandler}.
+     *             {@see RevealContentHandler}.
      */
     protected void setSlot(GwtEvent.Type<RevealContentHandler<?>> slot) {
         this.slot = slot;

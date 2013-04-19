@@ -1,5 +1,8 @@
-/**
- * Copyright 2011 ArcBees Inc.
+/*
+ * Copyright 2013 Cedric Hauber.
+ *
+ * Some methods, files, concepts came from ArcBees Inc.
+ * http://code.google.com/p/gwt-platform/
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -28,12 +31,11 @@ import org.vaadin.mvp.core.PresenterWidget;
  * parent.<br/>
  * Use this type of event to reveal popup content that should get added at the
  * root of the presenter hierarchy.
- * 
+ *
+ * @author Philippe Beaudoin
  * @see RevealContentEvent
  * @see RevealRootContentEvent
  * @see RevealRootLayoutContentEvent
- * 
- * @author Philippe Beaudoin
  */
 public final class RevealRootPopupContentEvent extends
         GwtEvent<RevealRootPopupContentHandler> {
@@ -43,34 +45,29 @@ public final class RevealRootPopupContentEvent extends
     /**
      * Fires a {@link RevealRootPopupContentEvent} into a source that has access
      * to an {@link org.vaadin.mvp.core.MVPEventBus}.
-     * 
-     * @param source
-     *            The source that fires this event ({@link HasHandlers}).
-     * @param content
-     *            The {@link PresenterWidget} with a {@link PopupView} that
-     *            wants to set itself as root content.
+     *
+     * @param source  The source that fires this event ({@link HasHandlers}).
+     * @param content The {@link PresenterWidget} with a {@link PopupView} that
+     *                wants to set itself as root content.
      */
     public static void fire(final HasHandlers source,
-            final PresenterWidget<? extends PopupView> content) {
+                            final PresenterWidget<? extends PopupView> content) {
         fire(source, content, true);
     }
 
     /**
      * Fires a {@link RevealRootPopupContentEvent} into a source that has access
      * to an {@link org.vaadin.mvp.core.MVPEventBus}.
-     * 
-     * @param source
-     *            The source that fires this event ({@link HasHandlers}).
-     * @param content
-     *            The {@link PresenterWidget} with a {@link PopupView} that
-     *            wants to set itself as root content.
-     * @param center
-     *            Pass true to center the popup, otherwise its position will not
-     *            be adjusted.
+     *
+     * @param source  The source that fires this event ({@link HasHandlers}).
+     * @param content The {@link PresenterWidget} with a {@link PopupView} that
+     *                wants to set itself as root content.
+     * @param center  Pass true to center the popup, otherwise its position will not
+     *                be adjusted.
      */
     public static void fire(final HasHandlers source,
-            final PresenterWidget<? extends PopupView> content,
-            final boolean center) {
+                            final PresenterWidget<? extends PopupView> content,
+                            final boolean center) {
         source.fireEvent(new RevealRootPopupContentEvent(content, center));
     }
 

@@ -1,5 +1,8 @@
-/**
- * Copyright 2011 ArcBees Inc.
+/*
+ * Copyright 2013 Cedric Hauber.
+ *
+ * Some methods, files, concepts came from ArcBees Inc.
+ * http://code.google.com/p/gwt-platform/
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -16,8 +19,6 @@
 
 package org.vaadin.mvp.core.proxy;
 
-import com.vaadin.navigator.View;
-
 /**
  * <b>Important:</b> For simplicity, places do not participate in dependency
  * injection and can be created with <code>new</code>.
@@ -30,7 +31,7 @@ import com.vaadin.navigator.View;
  *
  * @author Philippe Beaudoin
  */
-public interface Place{
+public interface Place {
 
     /**
      * Checks if the associated presenter can be revealed.

@@ -1,5 +1,8 @@
-/**
- * Copyright 2011 ArcBees Inc.
+/*
+ * Copyright 2013 Cedric Hauber.
+ *
+ * Some methods, files, concepts came from ArcBees Inc.
+ * http://code.google.com/p/gwt-platform/
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -28,7 +31,7 @@ public class PlaceWithGatekeeperWithParams extends PlaceImpl {
     private final String[] params;
 
     public PlaceWithGatekeeperWithParams(String nameToken, GatekeeperWithParams gatekeeper,
-            String[] params) {
+                                         String[] params) {
         super(nameToken);
         this.gatekeeper = gatekeeper;
         this.params = params;

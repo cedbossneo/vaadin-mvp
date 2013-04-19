@@ -1,5 +1,8 @@
-/**
- * Copyright 2011 ArcBees Inc.
+/*
+ * Copyright 2013 Cedric Hauber.
+ *
+ * Some methods, files, concepts came from ArcBees Inc.
+ * http://code.google.com/p/gwt-platform/
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -28,7 +31,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * containing a type of event that is monitored by this presenter. When handling
  * this event, a child presenter is inserted in the presenter's view. You should
  * make sure the view handles event of this type in its
- * {@link org.vaadin.mvp.core.View#setInSlot(Object, com.google.gwt.user.client.ui.Widget)} method.
+ * {@link org.vaadin.mvp.core.View#setInSlot(Object, com.vaadin.ui.Component)} method.
  *
  * @author Philippe Beaudoin
  */

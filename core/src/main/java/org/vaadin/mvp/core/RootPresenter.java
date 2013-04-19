@@ -1,5 +1,8 @@
-/**
- * Copyright 2011 ArcBees Inc.
+/*
+ * Copyright 2013 Cedric Hauber.
+ *
+ * Some methods, files, concepts came from ArcBees Inc.
+ * http://code.google.com/p/gwt-platform/
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -16,26 +19,16 @@
 
 package org.vaadin.mvp.core;
 
-import javax.inject.Inject;
-
 import com.vaadin.ui.Component;
 import com.vaadin.ui.UI;
-import org.vaadin.mvp.core.proxy.LockInteractionEvent;
-import org.vaadin.mvp.core.proxy.LockInteractionHandler;
-import org.vaadin.mvp.core.proxy.ResetPresentersEvent;
-import org.vaadin.mvp.core.proxy.ResetPresentersHandler;
-import org.vaadin.mvp.core.proxy.RevealRootContentEvent;
-import org.vaadin.mvp.core.proxy.RevealRootContentHandler;
-import org.vaadin.mvp.core.proxy.RevealRootLayoutContentEvent;
-import org.vaadin.mvp.core.proxy.RevealRootLayoutContentHandler;
-import org.vaadin.mvp.core.proxy.RevealRootPopupContentEvent;
-import org.vaadin.mvp.core.proxy.RevealRootPopupContentHandler;
+import org.vaadin.mvp.core.proxy.*;
+
+import javax.inject.Inject;
 
 /**
  * This is the presenter for the top-level of the application. It is derived
  * from presenter widget, but it's just because it doesn't need a proxy has it
- * will be bound as an eager singleton. It sets content within GWT's
- * {@link RootPanel} and {@link RootLayoutPanel}.
+ * will be bound as an eager singleton.
  * <p/>
  * Fire a {@link RevealRootContentEvent} or {@link RevealRootLayoutContentEvent}
  * to set your presenter at the top level. The choice depends on whether your
@@ -85,8 +78,7 @@ public class RootPresenter extends PresenterWidget<RootPresenter.RootView>
     /**
      * Creates a proxy class for a presenter that can contain tabs.
      *
-     * @param eventBus
-     *            The event bus.
+     * @param eventBus The event bus.
      */
     @Inject
     public RootPresenter(final MVPEventBus eventBus, final RootView view) {

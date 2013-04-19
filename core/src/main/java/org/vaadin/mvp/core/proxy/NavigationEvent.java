@@ -1,5 +1,8 @@
-/**
- * Copyright 2011 ArcBees Inc.
+/*
+ * Copyright 2013 Cedric Hauber.
+ *
+ * Some methods, files, concepts came from ArcBees Inc.
+ * http://code.google.com/p/gwt-platform/
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -20,8 +23,7 @@ import com.google.gwt.event.shared.GwtEvent;
 import com.google.gwt.event.shared.HasHandlers;
 
 /**
- * Event fired after navigation has occurred. It will not be fired if navigation is
- * refused through {@link PlaceManager#setOnLeaveConfirmation}, instead
+ * Event fired after navigation has occurred. It will not be fired if
  * {@link NavigationRefusedEvent} will.
  * <p/>
  * Instead of registering your presenter towards this event, consider overriding

@@ -1,5 +1,8 @@
-/**
- * Copyright 2011 ArcBees Inc.
+/*
+ * Copyright 2013 Cedric Hauber.
+ *
+ * Some methods, files, concepts came from ArcBees Inc.
+ * http://code.google.com/p/gwt-platform/
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -16,11 +19,11 @@
 
 package org.vaadin.mvp.core.annotations;
 
+import org.vaadin.mvp.core.TabContainerPresenter;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
-
-import org.vaadin.mvp.core.TabContainerPresenter;
 
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 

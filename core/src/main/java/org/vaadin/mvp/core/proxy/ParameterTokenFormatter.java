@@ -1,5 +1,8 @@
-/**
- * Copyright 2011 ArcBees Inc.
+/*
+ * Copyright 2013 Cedric Hauber.
+ *
+ * Some methods, files, concepts came from ArcBees Inc.
+ * http://code.google.com/p/gwt-platform/
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -41,7 +44,7 @@ import java.util.Set;
  * <p/>
  * Before decoding a {@link String} URL fragment into a {@link PlaceRequest} or a
  * {@link PlaceRequest} hierarchy, {@link ParameterTokenFormatter} will first pass the
- * {@link String} through {@link URL#decodeQueryString(String)} so that if the URL was URL-encoded
+ * {@link String} through URLDecoder.decode so that if the URL was URL-encoded
  * by some user agent, like a mail user agent, it is still parsed correctly.
  * <p/>
  * For example, {@link ParameterTokenFormatter} would parse any of the following:
@@ -62,7 +65,7 @@ import java.util.Set;
  * </pre>
  * <p/>
  * If you want to use different symbols as separator, use the
- * {@link #ParameterTokenFormatter(String, String, String, String)} constructor.
+ * {@link #ParameterTokenFormatter(String, String, String)} constructor.
  *
  * @author Philippe Beaudoin
  * @author Yannis Gonianakis
@@ -96,7 +99,7 @@ public class ParameterTokenFormatter implements TokenFormatter {
     /**
      * This constructor makes it possible to use custom separators in your token formatter. The
      * separators must be 1-letter strings, they must all be different from one another, and they
-     * must be encoded when ran through {@link URL#encodeQueryString(String)}).
+     * must be encoded when ran through URLEncoder.encode.
      *
      * @param hierarchySeparator The symbol used to separate {@link PlaceRequest} in a hierarchy.
      *                           Must be a 1-character string and can't be {@code %}.
@@ -147,7 +150,7 @@ public class ParameterTokenFormatter implements TokenFormatter {
 
     /**
      * Converts an unescaped string to a place request. To unescape the hash fragment you must run it
-     * through {@link URL#decodeQueryString(String)}.
+     * through URLDecoder.decode.
      *
      * @param unescapedPlaceToken The unescaped string to convert to a place request.
      * @return The place request.
@@ -250,7 +253,7 @@ public class ParameterTokenFormatter implements TokenFormatter {
     /**
      * Use our custom escaping mechanism to escape the provided string. This should be used on the
      * name token, and the parameter keys and values, before they are attached with the various
-     * separators. The string will also be passed through {@link URL#encodeQueryString}.
+     * separators. The string will also be passed through URLEncoder.encode.
      * Visible for testing.
      *
      * @param string The string to escape.
@@ -286,9 +289,9 @@ public class ParameterTokenFormatter implements TokenFormatter {
      * Use our custom escaping mechanism to unescape the provided string. This should be used on the
      * name token, and the parameter keys and values, after they have been split using the various
      * separators. The input string is expected to already be sent through
-     * {@link URL#decodeQueryString}.
+     * URLDecoder.decode.
      *
-     * @param string The string to unescape, must have passed through {@link URL#decodeQueryString}.
+     * @param string The string to unescape, must have passed through URLDecoder.decode.
      * @return The unescaped string.
      * @throws TokenFormatException if there is an error converting.
      */

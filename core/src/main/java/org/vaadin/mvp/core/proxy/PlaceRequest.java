@@ -1,5 +1,8 @@
-/**
- * Copyright 2011 ArcBees Inc.
+/*
+ * Copyright 2013 Cedric Hauber.
+ *
+ * Some methods, files, concepts came from ArcBees Inc.
+ * http://code.google.com/p/gwt-platform/
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -99,7 +102,7 @@ public class PlaceRequest {
      * Builds a place request with the specified name token and with an existing parameter map.
      *
      * @param nameToken The name token for the request.
-     * @param params Existing parameter map.
+     * @param params    Existing parameter map.
      */
     PlaceRequest(String nameToken, Map<String, String> params) {
         this.nameToken = nameToken;

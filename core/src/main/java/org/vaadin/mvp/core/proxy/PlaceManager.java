@@ -1,5 +1,8 @@
-/**
- * Copyright 2011 ArcBees Inc.
+/*
+ * Copyright 2013 Cedric Hauber.
+ *
+ * Some methods, files, concepts came from ArcBees Inc.
+ * http://code.google.com/p/gwt-platform/
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -372,11 +375,11 @@ public interface PlaceManager extends HasHandlers {
     /**
      * Resets the navigation lock if it is currently set. You should usually not call this directly,
      * instead it is meant to be used with presenters that use manual reveal via
-     * {@link ProxyPlace#manualReveal(com.gwtplatform.mvp.client.Presenter)} and
+     * {@link ProxyPlace#manualReveal(org.vaadin.mvp.core.Presenter)} and
      * {@link ProxyPlace#manualRevealFailed()}.
      *
-     * @see com.gwtplatform.mvp.client.Presenter#useManualReveal()
-     * @see ProxyPlace#manualReveal(com.gwtplatform.mvp.client.Presenter)
+     * @see org.vaadin.mvp.core.Presenter#useManualReveal
+     * @see ProxyPlace#manualReveal(org.vaadin.mvp.core.Presenter)
      * @see ProxyPlace#manualRevealFailed()
      */
     void unlock();

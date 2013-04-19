@@ -1,5 +1,8 @@
-/**
- * Copyright 2011 ArcBees Inc.
+/*
+ * Copyright 2013 Cedric Hauber.
+ *
+ * Some methods, files, concepts came from ArcBees Inc.
+ * http://code.google.com/p/gwt-platform/
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -37,7 +40,7 @@ public final class RequestTabsEvent extends GwtEvent<RequestTabsHandler> {
      * @param tabContainer The {@link TabContainerPresenter} requesting the tabs.
      */
     public static void fire(final HasHandlers source,
-            final Type<RequestTabsHandler> type, TabContainerPresenter<?, ?> tabContainer) {
+                            final Type<RequestTabsHandler> type, TabContainerPresenter<?, ?> tabContainer) {
 
         source.fireEvent(new RequestTabsEvent(type, tabContainer));
     }
@@ -53,7 +56,7 @@ public final class RequestTabsEvent extends GwtEvent<RequestTabsHandler> {
      * @param tabContainer The {@link TabContainerPresenter} making the request.
      */
     public RequestTabsEvent(final Type<RequestTabsHandler> type,
-            TabContainerPresenter<?, ?> tabContainer) {
+                            TabContainerPresenter<?, ?> tabContainer) {
         this.type = type;
         this.tabContainer = tabContainer;
     }

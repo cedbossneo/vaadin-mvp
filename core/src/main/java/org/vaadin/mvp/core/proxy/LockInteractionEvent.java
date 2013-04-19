@@ -1,5 +1,8 @@
-/**
- * Copyright 2011 ArcBees Inc.
+/*
+ * Copyright 2013 Cedric Hauber.
+ *
+ * Some methods, files, concepts came from ArcBees Inc.
+ * http://code.google.com/p/gwt-platform/
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -26,7 +29,7 @@ import com.google.gwt.event.shared.HasHandlers;
  * <p/>
  * This event is typically fired by the {@link PlaceManager} whenever a navigation operation
  * starts or stops. It is handled by the default {@link org.vaadin.mvp.core.RootPresenter} implementation.
- * Override {@link org.vaadin.mvp.core.RootPresenter#lockInteraction(boolean)} to customize the behaviour.
+ * Override {@link org.vaadin.mvp.core.RootPresenter#onLockInteraction(LockInteractionEvent)}  to customize the behaviour.
  *
  * @author Philippe Beaudoin
  */

@@ -1,5 +1,8 @@
-/**
- * Copyright 2011 ArcBees Inc.
+/*
+ * Copyright 2013 Cedric Hauber.
+ *
+ * Some methods, files, concepts came from ArcBees Inc.
+ * http://code.google.com/p/gwt-platform/
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -43,7 +46,7 @@ public interface HasSlots {
     /**
      * This method adds some content in a specific slot of the {@link Presenter}.
      * The attached {@link View} should manage this slot when its
-     * {@link View#addToSlot(Object, com.google.gwt.user.client.ui.Widget)} is called.
+     * {@link View#addToSlot(Object, com.vaadin.ui.Component)} is called.
      * <p/>
      * Contrary to the {@link #setInSlot} method, no
      * {@link org.vaadin.mvp.core.proxy.ResetPresentersEvent} is fired,
@@ -62,8 +65,8 @@ public interface HasSlots {
      * This method clears the content in a specific slot. No
      * {@link org.vaadin.mvp.core.proxy.ResetPresentersEvent} is fired.
      * The attached {@link View} should manage this slot when its
-     * {@link View#setInSlot(Object, com.google.gwt.user.client.ui.Widget)} is called. It should also clear
-     * the slot when the {@link View#setInSlot(Object, com.google.gwt.user.client.ui.Widget)} method is
+     * {@link View#setInSlot(Object, com.vaadin.ui.Component)} is called. It should also clear
+     * the slot when the {@link View#setInSlot(Object, com.vaadin.ui.Component)}  method is
      * called with {@code null} as a parameter.
      * <p/>
      * For more details on slots, see {@link HasSlots}.
@@ -77,7 +80,7 @@ public interface HasSlots {
      * {@link Presenter}. No
      * {@link org.vaadin.mvp.core.proxy.ResetPresentersEvent} is fired.
      * The attached {@link View} should manage this slot when its
-     * {@link View#removeFromSlot(Object, com.google.gwt.user.client.ui.Widget)} is called.
+     * {@link View#removeFromSlot(Object, com.vaadin.ui.Component)}  is called.
      * <p/>
      * For more details on slots, see {@link HasSlots}.
      *
@@ -106,7 +109,7 @@ public interface HasSlots {
     /**
      * This method sets some content in a specific slot of the {@link Presenter}.
      * The attached {@link View} should manage this slot when its
-     * {@link View#setInSlot(Object, com.google.gwt.user.client.ui.Widget)} is called. It should also clear the
+     * {@link View#setInSlot(Object, com.vaadin.ui.Component)}  is called. It should also clear the
      * slot when the {@code setInSlot} method is called with {@code null} as a
      * parameter.
      * <p/>

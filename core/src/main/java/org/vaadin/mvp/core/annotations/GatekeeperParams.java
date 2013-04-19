@@ -1,5 +1,8 @@
-/**
- * Copyright 2011 ArcBees Inc.
+/*
+ * Copyright 2013 Cedric Hauber.
+ *
+ * Some methods, files, concepts came from ArcBees Inc.
+ * http://code.google.com/p/gwt-platform/
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -24,10 +27,10 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
  * This annotation lets you define the parameters for a
- * {@link GatekeeperWithParams} to use for the
+ * {@link org.vaadin.mvp.core.proxy.GatekeeperWithParams} to use for the
  * {@link org.vaadin.mvp.core.proxy.Place} associated
  * with your proxy. Your custom {@code Ginjector} must have a
- * method returning the {@link GatekeeperWithParams} specified
+ * method returning the {@link org.vaadin.mvp.core.proxy.GatekeeperWithParams} specified
  * in this annotation.
  *
  * @author Juan Carlos González

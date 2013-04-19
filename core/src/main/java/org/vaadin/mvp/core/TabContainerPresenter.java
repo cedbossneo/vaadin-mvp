@@ -1,5 +1,8 @@
-/**
- * Copyright 2011 ArcBees Inc.
+/*
+ * Copyright 2013 Cedric Hauber.
+ *
+ * Some methods, files, concepts came from ArcBees Inc.
+ * http://code.google.com/p/gwt-platform/
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -68,8 +71,8 @@ public abstract class TabContainerPresenter<V extends View & TabPanel, Proxy_ ex
      * @param revealType           The {@link RevealType}.
      */
     public TabContainerPresenter(MVPEventBus eventBus, V view, Proxy_ proxy,
-            Object tabContentSlot, Type<RequestTabsHandler> requestTabsEventType,
-            Type<ChangeTabHandler> changeTabType, RevealType revealType) {
+                                 Object tabContentSlot, Type<RequestTabsHandler> requestTabsEventType,
+                                 Type<ChangeTabHandler> changeTabType, RevealType revealType) {
         this(eventBus, view, proxy, tabContentSlot, requestTabsEventType, changeTabType, revealType, null);
     }
 
@@ -87,12 +90,12 @@ public abstract class TabContainerPresenter<V extends View & TabPanel, Proxy_ ex
      * @param requestTabsEventType The {@link Type} of the object to fire to
      *                             identify all the displayed tabs.
      * @param slot                 The slot where to reveal this presenter see {@see com.google.gwt.event.shared
-     * .GwtEvent.Type}
+     *                             .GwtEvent.Type}
      *                             and {@see RevealContentHandler}.
      */
     public TabContainerPresenter(MVPEventBus eventBus, V view, Proxy_ proxy,
-            Object tabContentSlot, Type<RequestTabsHandler> requestTabsEventType,
-            Type<ChangeTabHandler> changeTabType, GwtEvent.Type<RevealContentHandler<?>> slot) {
+                                 Object tabContentSlot, Type<RequestTabsHandler> requestTabsEventType,
+                                 Type<ChangeTabHandler> changeTabType, GwtEvent.Type<RevealContentHandler<?>> slot) {
         this(eventBus, view, proxy, tabContentSlot, requestTabsEventType, changeTabType, null, slot);
     }
 
@@ -111,12 +114,12 @@ public abstract class TabContainerPresenter<V extends View & TabPanel, Proxy_ ex
      *                             identify all the displayed tabs.
      * @param revealType           The {@link RevealType}.
      * @param slot                 The slot where to reveal this presenter see {@see com.google.gwt.event.shared
-     * .GwtEvent.Type}
+     *                             .GwtEvent.Type}
      *                             and {@see RevealContentHandler}.
      */
     public TabContainerPresenter(MVPEventBus eventBus, V view, Proxy_ proxy,
-            Object tabContentSlot, Type<RequestTabsHandler> requestTabsEventType,
-            Type<ChangeTabHandler> changeTabType, RevealType revealType, Type<RevealContentHandler<?>> slot) {
+                                 Object tabContentSlot, Type<RequestTabsHandler> requestTabsEventType,
+                                 Type<ChangeTabHandler> changeTabType, RevealType revealType, Type<RevealContentHandler<?>> slot) {
         super(eventBus, view, proxy, revealType, slot);
         this.tabContentSlot = tabContentSlot;
         this.requestTabsEventType = requestTabsEventType;
@@ -148,7 +151,7 @@ public abstract class TabContainerPresenter<V extends View & TabPanel, Proxy_ ex
      *                             identify all the displayed tabs.
      */
     public TabContainerPresenter(MVPEventBus eventBus, V view, Proxy_ proxy,
-            Object tabContentSlot, Type<RequestTabsHandler> requestTabsEventType) {
+                                 Object tabContentSlot, Type<RequestTabsHandler> requestTabsEventType) {
         this(eventBus, view, proxy, tabContentSlot, requestTabsEventType, null, null, null);
     }
 
@@ -169,8 +172,8 @@ public abstract class TabContainerPresenter<V extends View & TabPanel, Proxy_ ex
      * @param revealType           The {@link RevealType}.
      */
     public TabContainerPresenter(MVPEventBus eventBus, V view, Proxy_ proxy,
-            Object tabContentSlot, Type<RequestTabsHandler> requestTabsEventType,
-            RevealType revealType) {
+                                 Object tabContentSlot, Type<RequestTabsHandler> requestTabsEventType,
+                                 RevealType revealType) {
         this(eventBus, view, proxy, tabContentSlot, requestTabsEventType, null, revealType, null);
     }
 
@@ -189,12 +192,12 @@ public abstract class TabContainerPresenter<V extends View & TabPanel, Proxy_ ex
      * @param requestTabsEventType The {@link Type} of the object to fire to
      *                             identify all the displayed tabs.
      * @param slot                 The slot where to reveal this presenter see {@see com.google.gwt.event.shared
-     * .GwtEvent.Type}
+     *                             .GwtEvent.Type}
      *                             and {@see RevealContentHandler}.
      */
     public TabContainerPresenter(MVPEventBus eventBus, V view, Proxy_ proxy,
-            Object tabContentSlot, Type<RequestTabsHandler> requestTabsEventType,
-            GwtEvent.Type<RevealContentHandler<?>> slot) {
+                                 Object tabContentSlot, Type<RequestTabsHandler> requestTabsEventType,
+                                 GwtEvent.Type<RevealContentHandler<?>> slot) {
         this(eventBus, view, proxy, tabContentSlot, requestTabsEventType, null, null, slot);
     }
 

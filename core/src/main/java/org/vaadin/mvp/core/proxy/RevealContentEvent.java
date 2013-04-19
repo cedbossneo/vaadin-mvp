@@ -1,5 +1,8 @@
-/**
- * Copyright 2011 ArcBees Inc.
+/*
+ * Copyright 2013 Cedric Hauber.
+ *
+ * Some methods, files, concepts came from ArcBees Inc.
+ * http://code.google.com/p/gwt-platform/
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -49,7 +52,7 @@ public final class RevealContentEvent extends GwtEvent<RevealContentHandler<?>> 
      * @param content The {@link Presenter} that wants to set itself as content in his parent.
      */
     public static void fire(final HasHandlers source,
-            final Type<RevealContentHandler<?>> type, final Presenter<?, ?> content) {
+                            final Type<RevealContentHandler<?>> type, final Presenter<?, ?> content) {
         source.fireEvent(new RevealContentEvent(type, content));
     }
 
@@ -58,7 +61,7 @@ public final class RevealContentEvent extends GwtEvent<RevealContentHandler<?>> 
     private final Type<RevealContentHandler<?>> type;
 
     public RevealContentEvent(Type<RevealContentHandler<?>> type,
-            Presenter<?, ?> content) {
+                              Presenter<?, ?> content) {
         this.type = type;
         this.content = content;
     }

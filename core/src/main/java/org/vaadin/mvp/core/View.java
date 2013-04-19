@@ -1,5 +1,8 @@
-/**
- * Copyright 2011 ArcBees Inc.
+/*
+ * Copyright 2013 Cedric Hauber.
+ *
+ * Some methods, files, concepts came from ArcBees Inc.
+ * http://code.google.com/p/gwt-platform/
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -22,7 +25,7 @@ import com.vaadin.ui.Component;
  * The interface for view classes that handles all the UI-related code for a
  * {@link Presenter}.
  */
-public interface View{
+public interface View {
 
     /**
      * Requests the view to add content within a specific slot.

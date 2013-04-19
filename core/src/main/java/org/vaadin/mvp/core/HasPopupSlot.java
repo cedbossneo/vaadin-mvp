@@ -1,5 +1,8 @@
-/**
- * Copyright 2011 ArcBees Inc.
+/*
+ * Copyright 2013 Cedric Hauber.
+ *
+ * Some methods, files, concepts came from ArcBees Inc.
+ * http://code.google.com/p/gwt-platform/
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -27,7 +30,7 @@ public interface HasPopupSlot {
      * inherit from {@link PopupView}. The popup will be visible and the
      * corresponding presenter will receive the lifecycle events as needed.
      * <p/>
-     * Contrary to the {@link View#setInSlot(Object, PresenterWidget}
+     * Contrary to the {@link View#setInSlot(Object, com.vaadin.ui.Component)}
      * method, no {@link org.vaadin.mvp.core.proxy.ResetPresentersEvent}
      * is fired, so {@link PresenterWidget#onReset()} is not invoked.
      *
@@ -42,7 +45,7 @@ public interface HasPopupSlot {
      * {@link PopupView}. The popup will be visible and the corresponding
      * presenter will receive the lifecycle events as needed.
      * <p/>
-     * Contrary to the {@link View#setInSlot(Object, PresenterWidget}
+     * Contrary to the {@link View#setInSlot(Object, com.vaadin.ui.Component)}
      * method, no {@link org.vaadin.mvp.core.proxy.ResetPresentersEvent}
      * is fired, so {@link PresenterWidget#onReset()} is not invoked.
      *

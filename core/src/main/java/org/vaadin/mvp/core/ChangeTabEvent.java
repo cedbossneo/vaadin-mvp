@@ -1,5 +1,8 @@
-/**
- * Copyright 2011 ArcBees Inc.
+/*
+ * Copyright 2013 Cedric Hauber.
+ *
+ * Some methods, files, concepts came from ArcBees Inc.
+ * http://code.google.com/p/gwt-platform/
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -38,7 +41,7 @@ public final class ChangeTabEvent extends GwtEvent<ChangeTabHandler> {
      * @param tabContentProxy The {@link TabContentProxy} for this tab, with modified information.
      */
     public static void fire(final HasHandlers source,
-            final Type<ChangeTabHandler> type, TabContentProxy<?> tabContentProxy) {
+                            final Type<ChangeTabHandler> type, TabContentProxy<?> tabContentProxy) {
 
         source.fireEvent(new ChangeTabEvent(type, tabContentProxy));
     }
@@ -54,7 +57,7 @@ public final class ChangeTabEvent extends GwtEvent<ChangeTabHandler> {
      * @param tabContentProxy The {@link TabContentProxy} for this tab, with modified information.
      */
     public ChangeTabEvent(final Type<ChangeTabHandler> type,
-            TabContentProxy<?> tabContentProxy) {
+                          TabContentProxy<?> tabContentProxy) {
         this.type = type;
         this.tabContentProxy = tabContentProxy;
     }

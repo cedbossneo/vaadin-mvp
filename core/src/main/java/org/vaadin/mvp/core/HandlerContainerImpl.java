@@ -1,5 +1,8 @@
-/**
- * Copyright 2011 ArcBees Inc.
+/*
+ * Copyright 2013 Cedric Hauber.
+ *
+ * Some methods, files, concepts came from ArcBees Inc.
+ * http://code.google.com/p/gwt-platform/
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -16,13 +19,12 @@
 
 package org.vaadin.mvp.core;
 
-import java.util.List;
+import com.google.web.bindery.event.shared.HandlerRegistration;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
-
-import com.google.web.bindery.event.shared.HandlerRegistration;
+import java.util.List;
 
 /**
  * The implementation of {@link HandlerContainer}. Inherit from this class if
@@ -89,7 +91,7 @@ public class HandlerContainerImpl implements HandlerContainer {
     }
 
     @Override
-  @PostConstruct
+    @PostConstruct
     public final void bind() {
         if (!bound.value) {
             onBind();
@@ -103,7 +105,7 @@ public class HandlerContainerImpl implements HandlerContainer {
     }
 
     @Override
-  @PreDestroy
+    @PreDestroy
     public final void unbind() {
         if (bound.value) {
             bound.value = false;
