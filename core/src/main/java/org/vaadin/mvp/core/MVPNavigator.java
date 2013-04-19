@@ -6,8 +6,6 @@ import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewDisplay;
 import com.vaadin.ui.UI;
 
-import javax.annotation.PostConstruct;
-
 /**
  * Created with IntelliJ IDEA.
  * User: hauber_c
@@ -26,7 +24,7 @@ public class MVPNavigator extends Navigator {
         });
     }
 
-    public void setGaAccount(String gaAccount){
+    public void setGaAccount(String gaAccount) {
         addViewChangeListener(new MVPViewChangeListener(gaAccount));
     }
 }

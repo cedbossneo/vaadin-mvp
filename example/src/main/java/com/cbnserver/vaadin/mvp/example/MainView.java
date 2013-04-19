@@ -1,7 +1,7 @@
 package com.cbnserver.vaadin.mvp.example;
 
 import com.vaadin.ui.*;
-import org.vaadin.mvp.core.views.ViewWithUiHandlers;
+import org.vaadin.mvp.core.ViewWithUiHandlers;
 
 /**
  * Created with IntelliJ IDEA.
@@ -10,14 +10,14 @@ import org.vaadin.mvp.core.views.ViewWithUiHandlers;
  * Time: 10:20
  * To change this template use File | Settings | File Templates.
  */
-public class MainView extends ViewWithUiHandlers<MainUiHandlers> implements MainPresenter.MyView{
+public class MainView extends ViewWithUiHandlers<MainUiHandlers> implements MainPresenter.MyView {
     private VerticalLayout panel;
     private TextField name;
     private Label label;
 
     @Override
     public Component asComponent() {
-        if (panel == null){
+        if (panel == null) {
             panel = new VerticalLayout();
             label = new Label("Hello world");
             panel.addComponent(label);
@@ -36,7 +36,7 @@ public class MainView extends ViewWithUiHandlers<MainUiHandlers> implements Main
     }
 
     @Override
-    public String getName(){
+    public String getName() {
         return name.getValue();
     }
 

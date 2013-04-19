@@ -18,8 +18,9 @@ package org.vaadin.mvp.core;
 
 import com.vaadin.cdi.UIScoped;
 import com.vaadin.server.VaadinSession;
-import com.vaadin.ui.UI;
-import org.vaadin.mvp.core.presenters.RootPresenter;
+import org.vaadin.mvp.core.annotations.DefaultPlace;
+import org.vaadin.mvp.core.annotations.ErrorPlace;
+import org.vaadin.mvp.core.annotations.UnauthorizedPlace;
 import org.vaadin.mvp.core.proxy.ProxyPlace;
 
 import javax.enterprise.inject.Produces;
@@ -31,7 +32,7 @@ import java.io.Serializable;
 import java.util.Set;
 
 @UIScoped
-public class MVP implements Serializable{
+public class MVP implements Serializable {
     @Inject
     BeanManager beanManager;
 
@@ -39,12 +40,24 @@ public class MVP implements Serializable{
     Provider<RootPresenter> rootPresenterProvider;
     RootPresenter rootPresenter;
 
-   public void init(){
-       VaadinSession.getCurrent().setAttribute("mvp", this);
-       rootPresenter = rootPresenterProvider.get();
-       Set<Bean<?>> proxies = beanManager.getBeans(ProxyPlace.class);
-       for (Bean<?> proxy : proxies) {
-           beanManager.getReference(proxy, proxy.getBeanClass(), beanManager.createCreationalContext(proxy));
-       }
+    public void init() {
+        VaadinSession.getCurrent().setAttribute("mvp", this);
+        rootPresenter = rootPresenterProvider.get();
+        Set<Bean<?>> proxies = beanManager.getBeans(ProxyPlace.class);
+        for (Bean<?> proxy : proxies) {
+            beanManager.getReference(proxy, proxy.getBeanClass(), beanManager.createCreationalContext(proxy));
+        }
     }
+
+    @Produces
+    @DefaultPlace
+    String defaultPlaceNameToken = "";
+
+    @Produces
+    @ErrorPlace
+    String errorPlaceNameToken = "error";
+
+    @Produces
+    @UnauthorizedPlace
+    String unauthorizedPlaceNameToken = "unauthorized";
 }

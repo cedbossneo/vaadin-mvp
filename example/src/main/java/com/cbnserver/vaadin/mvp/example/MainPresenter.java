@@ -1,12 +1,13 @@
 package com.cbnserver.vaadin.mvp.example;
 
 import com.vaadin.cdi.UIScoped;
+import org.vaadin.mvp.core.HasUiHandlers;
 import org.vaadin.mvp.core.MVPEventBus;
-import org.vaadin.mvp.core.annotations.PlaceToken;
-import org.vaadin.mvp.core.events.RevealRootContentEvent;
-import org.vaadin.mvp.core.presenters.Presenter;
-import org.vaadin.mvp.core.views.HasUiHandlers;
-import org.vaadin.mvp.core.views.View;
+import org.vaadin.mvp.core.Presenter;
+import org.vaadin.mvp.core.View;
+import org.vaadin.mvp.core.annotations.NameToken;
+import org.vaadin.mvp.core.proxy.Proxy;
+import org.vaadin.mvp.core.proxy.RevealRootContentEvent;
 
 import javax.inject.Inject;
 
@@ -17,13 +18,12 @@ import javax.inject.Inject;
  * Time: 10:19
  * To change this template use File | Settings | File Templates.
  */
-@PlaceToken
 @UIScoped
-public class MainPresenter extends Presenter<MainPresenter.MyView> implements MainUiHandlers {
+public class MainPresenter extends Presenter<MainPresenter.MyView, MainPresenter.MyProxy> implements MainUiHandlers {
 
     @Inject
-    public MainPresenter(MVPEventBus eventBus, MyView view) {
-        super(eventBus, view);
+    public MainPresenter(MyProxy proxy, MVPEventBus eventBus, MyView view) {
+        super(eventBus, view, proxy);
         getView().setUiHandlers(this);
     }
 
@@ -37,9 +37,13 @@ public class MainPresenter extends Presenter<MainPresenter.MyView> implements Ma
         getView().helloTo(getView().getName());
     }
 
-    public interface MyView extends View, HasUiHandlers<MainUiHandlers>{
+    public interface MyView extends View, HasUiHandlers<MainUiHandlers> {
         String getName();
 
         void helloTo(String name);
+    }
+
+    @NameToken("")
+    public interface MyProxy extends Proxy<MainPresenter> {
     }
 }
