@@ -23,15 +23,15 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.cbnserver</groupId>
-    <artifactId>vaadin-mvp</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <artifactId>gwtp4vaadin</artifactId>
+    <version>1.0.0</version>
     <modules>
         <module>core</module>
         <module>generator</module>
         <module>example</module>
     </modules>
     <packaging>pom</packaging>
-    <name>vaadin-mvp</name>
+    <name>gwtp4vaadin</name>
 
     <repositories>
         <repository>
