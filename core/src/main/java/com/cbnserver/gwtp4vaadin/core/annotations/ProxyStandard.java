@@ -17,7 +17,10 @@
 package com.cbnserver.gwtp4vaadin.core.annotations;
 
 import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
+
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
  * Use this annotation with a {@link com.gwtplatform.mvp.client.proxy.Proxy} if
@@ -36,5 +39,6 @@ import java.lang.annotation.Target;
  * @see <a href="http://code.google.com/webtoolkit/doc/latest/DevGuideCodeSplitting.html">Code Splitting</a>
  */
 @Target(ElementType.TYPE)
+@Retention(RUNTIME)
 public @interface ProxyStandard {
 }
