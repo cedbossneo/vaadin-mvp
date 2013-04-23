@@ -26,8 +26,9 @@ import org.vaadin.mvp.core.Presenter;
 import org.vaadin.mvp.core.View;
 import org.vaadin.mvp.core.annotations.GatekeeperParams;
 import org.vaadin.mvp.core.annotations.NameToken;
+import org.vaadin.mvp.core.annotations.ProxyStandard;
 import org.vaadin.mvp.core.annotations.UseGatekeeper;
-import org.vaadin.mvp.core.proxy.Proxy;
+import org.vaadin.mvp.core.proxy.ProxyPlace;
 import org.vaadin.mvp.core.proxy.RevealRootContentEvent;
 
 import javax.inject.Inject;
@@ -67,6 +68,7 @@ public class MainPresenter extends Presenter<MainPresenter.MyView, MainPresenter
     }
 
     @NameToken("")
-    public interface MyProxy extends Proxy<MainPresenter> {
+    @ProxyStandard
+    public interface MyProxy extends ProxyPlace<MainPresenter> {
     }
 }

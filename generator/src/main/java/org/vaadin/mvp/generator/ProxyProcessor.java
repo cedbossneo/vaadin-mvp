@@ -22,6 +22,7 @@ package org.vaadin.mvp.generator;
 import com.sun.codemodel.*;
 import com.vaadin.cdi.UIScoped;
 import org.vaadin.mvp.core.MVPEventBus;
+import org.vaadin.mvp.core.Presenter;
 import org.vaadin.mvp.core.annotations.*;
 import org.vaadin.mvp.core.proxy.*;
 
@@ -38,7 +39,9 @@ import javax.lang.model.type.TypeMirror;
 import javax.tools.Diagnostic;
 import javax.tools.StandardLocation;
 import java.io.File;
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Created with IntelliJ IDEA.
@@ -47,10 +50,9 @@ import java.util.*;
  * Time: 14:14
  * To change this template use File | Settings | File Templates.
  */
-@SupportedAnnotationTypes("org.vaadin.mvp.core.annotations.NameToken")
+@SupportedAnnotationTypes("org.vaadin.mvp.core.annotations.ProxyStandard")
 public class ProxyProcessor extends AbstractProcessor {
 
-    private final Map<String, JDefinedClass> proxies = new HashMap<String, JDefinedClass>();
     private final JCodeModel jCodeModel;
     private TypeElement defaultGateKeeper;
     private Messager messager;
@@ -70,21 +72,21 @@ public class ProxyProcessor extends AbstractProcessor {
             messager.printMessage(Diagnostic.Kind.NOTE, "Creating PlaceTokenRegistry");
             createPlaceTokenRegistry();
             messager.printMessage(Diagnostic.Kind.NOTE, "Executing annotation processor for NameToken");
-            Set<TypeElement> proxies = (Set<TypeElement>) roundEnv.getElementsAnnotatedWith(NameToken.class);
+            Set<TypeElement> proxies = (Set<TypeElement>) roundEnv.getElementsAnnotatedWith(ProxyStandard.class);
             Set<TypeElement> gateKeepers = (Set<TypeElement>) roundEnv.getElementsAnnotatedWith(DefaultGatekeeper.class);
             messager.printMessage(Diagnostic.Kind.NOTE, "Found " + proxies.size() + " proxies");
             if (gateKeepers.size() == 1) {
                 defaultGateKeeper = gateKeepers.iterator().next();
                 messager.printMessage(Diagnostic.Kind.NOTE, "Found default gatekeeper");
             }
-            for (TypeElement proxyType : proxies) {
-                TypeElement presenterType = getProxyPresenter(proxyType);
+            for (TypeElement proxy : proxies) {
+                TypeElement presenterType = getProxyPresenter(proxy);
                 if (presenterType == null)
                     continue;
-                messager.printMessage(Diagnostic.Kind.NOTE, "Generating " + presenterType.getSimpleName().toString() + "ProxyImpl");
-                JDefinedClass proxy = createPresenterProxy(presenterType, proxyType);
-                createPresenterProxyPlace(presenterType, proxyType, proxy);
-                messager.printMessage(Diagnostic.Kind.NOTE, "Generating " + presenterType.getSimpleName().toString() + "ProxyImpl done");
+                if (proxy.getAnnotation(NameToken.class) != null)
+                    createPresenterProxyPlace(presenterType, proxy, createPresenterProxy(presenterType, null));
+                else
+                    createPresenterProxy(presenterType, proxy);
             }
             jCodeModel.build(outDir.getParentFile());
             messager.printMessage(Diagnostic.Kind.NOTE, "Annotation processor for PlaceToken done");
@@ -93,6 +95,17 @@ public class ProxyProcessor extends AbstractProcessor {
             return false;
         }
         return true;
+    }
+
+    private TypeMirror isPresenter(TypeElement proxyType) {
+        TypeMirror superclass = proxyType.getSuperclass();
+        if (superclass == null)
+            return null;
+        TypeElement element = (TypeElement) processingEnv.getTypeUtils().asElement(superclass);
+        if (element.getQualifiedName().toString().equals(Presenter.class.getCanonicalName()))
+            return superclass;
+        else
+            return isPresenter(element);
     }
 
     private void createPlaceTokenRegistry() {
@@ -117,7 +130,7 @@ public class ProxyProcessor extends AbstractProcessor {
 
     private TypeElement getProxyPresenter(TypeElement proxyType) {
         for (TypeMirror typeMirror : proxyType.getInterfaces()) {
-            if (!typeMirror.toString().startsWith(Proxy.class.getCanonicalName()))
+            if (!typeMirror.toString().startsWith(ProxyPlace.class.getCanonicalName()) && !typeMirror.toString().startsWith(Proxy.class.getCanonicalName()))
                 continue;
             String presenterType = typeMirror.toString().substring(typeMirror.toString().indexOf('<')).replaceAll("<|>", "");
             return processingEnv.getElementUtils().getTypeElement(presenterType);
@@ -126,96 +139,114 @@ public class ProxyProcessor extends AbstractProcessor {
     }
 
     public JDefinedClass createPresenterProxy(TypeElement presenter, TypeElement proxyInterface) {
-        if (proxies.containsKey(presenter.getQualifiedName().toString())) //Check in map
-            return proxies.get(presenter.getQualifiedName().toString());
         try {
+            messager.printMessage(Diagnostic.Kind.NOTE, "Generating " + presenter.getSimpleName().toString() + "ProxyImpl");
             JDefinedClass proxyClass = jCodeModel._package(((PackageElement) presenter.getEnclosingElement()).getQualifiedName().toString())._class(presenter.getSimpleName() + "ProxyImpl");
             proxyClass.annotate(UIScoped.class);
             JClass presenterClass = jCodeModel.directClass(presenter.getQualifiedName().toString());
             proxyClass._extends(jCodeModel.ref(ProxyImpl.class).narrow(presenterClass));
-            proxyClass._implements(jCodeModel.directClass(proxyInterface.getQualifiedName().toString()));
+            if (proxyInterface != null)
+                proxyClass._implements(jCodeModel.directClass(proxyInterface.getQualifiedName().toString()));
             proxyClass.method(JMod.PUBLIC, jCodeModel.ref(Class.class).narrow(presenterClass), "getPresenter").body()._return(JExpr.dotclass(presenterClass));
             JMethod constructor = proxyClass.constructor(JMod.PUBLIC);
             constructor.annotate(Inject.class);
             JVar eventBusParameter = constructor.param(MVPEventBus.class, "eventBus");
             JVar beanManagerParameter = constructor.param(BeanManager.class, "beanManager");
             constructor.body().invoke("super").arg(beanManagerParameter).arg(eventBusParameter);
-            registerEventsHandler(constructor.body(), presenter, presenterClass, proxyClass);
-            proxies.put(presenter.getQualifiedName().toString(), proxyClass);
+            processEventsHandler(constructor.body(), presenter, presenterClass, proxyClass);
+            messager.printMessage(Diagnostic.Kind.NOTE, "Generated " + presenter.getSimpleName().toString() + "ProxyImpl");
             return proxyClass;
         } catch (JClassAlreadyExistsException e) {
             e.printStackTrace();
         }
+        messager.printMessage(Diagnostic.Kind.NOTE, "Error while generating " + presenter.getSimpleName().toString() + "ProxyImpl");
         return null;
     }
 
-    public JDefinedClass createPresenterProxyPlace(TypeElement presenterType, TypeElement proxyType, JDefinedClass proxy) {
+    public JDefinedClass createPresenterProxyPlace(TypeElement presenter, TypeElement proxyPlaceType, JDefinedClass presenterProxy) {
         try {
-            String place = proxyType.getAnnotation(NameToken.class).value();
+            messager.printMessage(Diagnostic.Kind.NOTE, "Generating " + presenter.getSimpleName().toString() + "ProxyPlaceImpl");
+            String place = proxyPlaceType.getAnnotation(NameToken.class).value();
             placesMethod.body().add(placesVar.invoke("add").arg(place));
-            JDefinedClass proxyPlaceClass = jCodeModel._package(((PackageElement) presenterType.getEnclosingElement()).getQualifiedName().toString())._class(presenterType.getSimpleName() + "ProxyPlaceImpl");
+            JDefinedClass proxyPlaceClass = jCodeModel._package(((PackageElement) presenter.getEnclosingElement()).getQualifiedName().toString())._class(presenter.getSimpleName() + "ProxyPlaceImpl");
             proxyPlaceClass.annotate(UIScoped.class);
-            JClass presenterJClass = jCodeModel.directClass(presenterType.getQualifiedName().toString());
-            proxyPlaceClass._extends(jCodeModel.ref(ProxyPlaceImpl.class).narrow(presenterJClass));
+            JClass presenterClass = jCodeModel.directClass(presenter.getQualifiedName().toString());
+            proxyPlaceClass._extends(jCodeModel.ref(ProxyPlaceImpl.class).narrow(presenterClass));
+            proxyPlaceClass._implements(jCodeModel.directClass(proxyPlaceType.getQualifiedName().toString()));
             JMethod constructor = proxyPlaceClass.constructor(JMod.PUBLIC);
             constructor.annotate(Inject.class);
-            JVar proxyParam = constructor.param(jCodeModel.ref(proxy.fullName()), "proxy");
+            JVar proxyParam = constructor.param(presenterProxy, "proxy");
+            JVar eventBusParam = constructor.param(MVPEventBus.class, "eventBus");
             JVar placeManagerParam = constructor.param(PlaceManager.class, "placeManager");
-            constructor.body().invoke("super").arg(proxyParam.invoke("getEventBus"));
+            constructor.body().invoke("super").arg(eventBusParam);
             constructor.body().add(JExpr.invoke("setProxy").arg(proxyParam));
             constructor.body().add(JExpr.invoke("setPlaceManager").arg(placeManagerParam));
-            if (presenterType.getAnnotation(NoGatekeeper.class) != null)
-                constructor.body().add(JExpr.invoke("setPlace").arg(JExpr._new(jCodeModel.ref(PlaceImpl.class)).arg(place)));
-            else {
-                UseGatekeeper useGatekeeper = presenterType.getAnnotation(UseGatekeeper.class);
-                if ((useGatekeeper != null) || defaultGateKeeper != null){
-                    JInvocation placeWithGateKeeper;
-                    JClass gateKeeperRef = null;
-                    if (useGatekeeper != null){
-                        try{
-                            //BIG Hack to retrieve annotation class
-                            useGatekeeper.value();
-                        }catch (MirroredTypeException e){
-                            gateKeeperRef = jCodeModel.ref(((TypeElement)processingEnv.getTypeUtils().asElement(e.getTypeMirror())).getQualifiedName().toString());
-                        }
-                    }else{
-                        gateKeeperRef = jCodeModel.ref(defaultGateKeeper.getQualifiedName().toString());
-                    }
-                    if (presenterType.getAnnotation(GatekeeperParams.class) != null){
-                        String[] value = presenterType.getAnnotation(GatekeeperParams.class).value();
-                        JArray array = JExpr.newArray(jCodeModel._ref(String.class));
-                        for (String s : value) {
-                            array.add(JExpr.lit(s));
-                        }
-                        placeWithGateKeeper = JExpr._new(jCodeModel.ref(PlaceWithGatekeeperWithParams.class)).arg(place).arg(JExpr._new(gateKeeperRef)).arg(array);
-                    }else
-                        placeWithGateKeeper = JExpr._new(jCodeModel.ref(PlaceWithGatekeeper.class)).arg(place).arg(JExpr._new(gateKeeperRef));
-                    constructor.body().add(JExpr.invoke("setPlace").arg(placeWithGateKeeper));
-                }
-                else
-                    constructor.body().add(JExpr.invoke("setPlace").arg(JExpr._new(jCodeModel.ref(PlaceImpl.class)).arg(place)));
-            }
-            if (presenterType.getAnnotation(Title.class) != null) {
-                JMethod placeTitle = proxyPlaceClass.method(JMod.PROTECTED, void.class, "getPlaceTitle");
-                JVar eventParam = placeTitle.param(GetPlaceTitleEvent.class, "event");
-                placeTitle.body().invoke(eventParam, "getHandler").invoke("onSetPlaceTitle").arg(presenterType.getAnnotation(Title.class).value());
-            }
-            List<? extends Element> fields = presenterType.getEnclosedElements();
-            for (Element field : fields) {
-                if (!(field instanceof VariableElement))
-                    continue;
-                if (field.getAnnotation(ContentSlot.class) == null)
-                    continue;
-                constructor.body().add(JExpr.invoke(proxyParam, "getEventBus").invoke("addHandler").arg(presenterJClass.staticRef(field.getSimpleName().toString())).arg(JExpr._new(jCodeModel.ref(RevealContentHandler.class).narrow(presenterJClass)).arg(proxyParam.invoke("getEventBus")).arg(proxyParam)));
-            }
+            processGateKeeper(presenter, place, constructor);
+            processTitle(presenter, proxyPlaceClass);
+            processContentSlot(presenter, presenterClass, constructor, proxyParam);
+            messager.printMessage(Diagnostic.Kind.NOTE, "Generated " + presenter.getSimpleName().toString() + "ProxyPlaceImpl");
             return proxyPlaceClass;
         } catch (Exception e) {
             e.printStackTrace();
         }
+        messager.printMessage(Diagnostic.Kind.NOTE, "Error while generating " + presenter.getSimpleName().toString() + "ProxyPlaceImpl");
         return null;
     }
 
-    private void registerEventsHandler(JBlock constructoryBody, TypeElement presenter, JClass presenterClass, JDefinedClass proxyClass) {
+    private void processContentSlot(TypeElement presenterType, JClass presenterJClass, JMethod constructor, JVar proxyParam) {
+        List<? extends Element> fields = presenterType.getEnclosedElements();
+        for (Element field : fields) {
+            if (!(field instanceof VariableElement))
+                continue;
+            if (field.getAnnotation(ContentSlot.class) == null)
+                continue;
+            constructor.body().add(JExpr.invoke(proxyParam, "getEventBus").invoke("addHandler").arg(presenterJClass.staticRef(field.getSimpleName().toString())).arg(JExpr._new(jCodeModel.ref(RevealContentHandler.class).narrow(presenterJClass)).arg(proxyParam.invoke("getEventBus")).arg(proxyParam)));
+        }
+    }
+
+    private void processTitle(TypeElement presenterType, JDefinedClass proxyPlaceClass) {
+        if (presenterType.getAnnotation(Title.class) != null) {
+            JMethod placeTitle = proxyPlaceClass.method(JMod.PROTECTED, void.class, "getPlaceTitle");
+            JVar eventParam = placeTitle.param(GetPlaceTitleEvent.class, "event");
+            placeTitle.body().invoke(eventParam, "getHandler").invoke("onSetPlaceTitle").arg(presenterType.getAnnotation(Title.class).value());
+        }
+    }
+
+    private void processGateKeeper(TypeElement presenterType, String place, JMethod constructor) {
+        if (presenterType.getAnnotation(NoGatekeeper.class) != null)
+            constructor.body().add(JExpr.invoke("setPlace").arg(JExpr._new(jCodeModel.ref(PlaceImpl.class)).arg(place)));
+        else {
+            UseGatekeeper useGatekeeper = presenterType.getAnnotation(UseGatekeeper.class);
+            if ((useGatekeeper != null) || defaultGateKeeper != null){
+                JInvocation placeWithGateKeeper;
+                JClass gateKeeperRef = null;
+                if (useGatekeeper != null){
+                    try{
+                        //BIG Hack to retrieve annotation class
+                        useGatekeeper.value();
+                    }catch (MirroredTypeException e){
+                        gateKeeperRef = jCodeModel.ref(((TypeElement)processingEnv.getTypeUtils().asElement(e.getTypeMirror())).getQualifiedName().toString());
+                    }
+                }else{
+                    gateKeeperRef = jCodeModel.ref(defaultGateKeeper.getQualifiedName().toString());
+                }
+                if (presenterType.getAnnotation(GatekeeperParams.class) != null){
+                    String[] value = presenterType.getAnnotation(GatekeeperParams.class).value();
+                    JArray array = JExpr.newArray(jCodeModel._ref(String.class));
+                    for (String s : value) {
+                        array.add(JExpr.lit(s));
+                    }
+                    placeWithGateKeeper = JExpr._new(jCodeModel.ref(PlaceWithGatekeeperWithParams.class)).arg(place).arg(JExpr._new(gateKeeperRef)).arg(array);
+                }else
+                    placeWithGateKeeper = JExpr._new(jCodeModel.ref(PlaceWithGatekeeper.class)).arg(place).arg(JExpr._new(gateKeeperRef));
+                constructor.body().add(JExpr.invoke("setPlace").arg(placeWithGateKeeper));
+            }
+            else
+                constructor.body().add(JExpr.invoke("setPlace").arg(JExpr._new(jCodeModel.ref(PlaceImpl.class)).arg(place)));
+        }
+    }
+
+    private void processEventsHandler(JBlock constructoryBody, TypeElement presenter, JClass presenterClass, JDefinedClass proxyClass) {
         List<? extends Element> methods = presenter.getEnclosedElements();
         for (Element methodElement : methods) {
             if (!(methodElement instanceof ExecutableElement))
