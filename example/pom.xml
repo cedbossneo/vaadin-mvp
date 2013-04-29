@@ -20,19 +20,37 @@
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-    <parent>
-        <artifactId>gwtp4vaadin</artifactId>
-        <groupId>com.cbnserver</groupId>
-        <version>1.0.2</version>
-    </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>example</artifactId>
     <packaging>war</packaging>
     <name>gwtp4vaadin-example</name>
+    <groupId>com.cbnserver</groupId>
+    <version>1.0.2</version>
 
     <properties>
+        <jboss.bom.version>1.0.0.Final</jboss.bom.version>
         <vaadin.version>7.0.2</vaadin.version>
     </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <!-- JBoss distributes a complete set of Java EE 6 APIs including
+                a Bill of Materials (BOM). A BOM specifies the versions of a "stack" (or
+                a collection) of artifacts. We use this here so that we always get the correct
+                versions of artifacts. Here we use the jboss-javaee-6.0-with-tools stack
+                (you can read this as the JBoss stack of the Java EE 6 APIs, with some extras
+                tools for your project, such as Arquillian for testing) and the jboss-javaee-6.0-with-hibernate
+                stack you can read this as the JBoss stack of the Java EE 6 APIs, with extras
+                from the Hibernate family of projects) -->
+            <dependency>
+                <groupId>org.jboss.bom</groupId>
+                <artifactId>jboss-javaee-6.0-with-tools</artifactId>
+                <version>${jboss.bom.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <dependencies>
         <!-- Import the CDI API, we use provided scope as the API is included
@@ -86,14 +104,8 @@
         </dependency>
         <dependency>
             <groupId>com.cbnserver</groupId>
-            <artifactId>gwtp4vaadin-core</artifactId>
-            <version>1.0.2</version>
-        </dependency>
-        <dependency>
-            <groupId>com.cbnserver</groupId>
-            <artifactId>gwtp4vaadin-generator</artifactId>
-            <version>1.0.2</version>
-            <scope>provided</scope>
+            <artifactId>gwtp4vaadin</artifactId>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
 
