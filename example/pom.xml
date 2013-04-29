@@ -23,7 +23,7 @@
     <parent>
         <artifactId>gwtp4vaadin</artifactId>
         <groupId>com.cbnserver</groupId>
-        <version>1.0.1</version>
+        <version>1.0.2</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>example</artifactId>
@@ -87,12 +87,12 @@
         <dependency>
             <groupId>com.cbnserver</groupId>
             <artifactId>gwtp4vaadin-core</artifactId>
-            <version>1.0.1</version>
+            <version>1.0.2</version>
         </dependency>
         <dependency>
             <groupId>com.cbnserver</groupId>
             <artifactId>gwtp4vaadin-generator</artifactId>
-            <version>1.0.1</version>
+            <version>1.0.2</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>

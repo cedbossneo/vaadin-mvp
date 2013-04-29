@@ -21,15 +21,39 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <parent>
-        <artifactId>gwtp4vaadin</artifactId>
-        <groupId>com.cbnserver</groupId>
-        <version>1.0.1</version>
-    </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>gwtp4vaadin-core</artifactId>
     <name>gwtp4vaadin-core</name>
+    <groupId>com.cbnserver</groupId>
+    <version>1.0.2</version>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <jboss.bom.version>1.0.0.Final</jboss.bom.version>
+        <vaadin.version>7.0.2</vaadin.version>
+        <vaadin.plugin.version>${vaadin.version}</vaadin.plugin.version>
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <!-- JBoss distributes a complete set of Java EE 6 APIs including
+                a Bill of Materials (BOM). A BOM specifies the versions of a "stack" (or
+                a collection) of artifacts. We use this here so that we always get the correct
+                versions of artifacts. Here we use the jboss-javaee-6.0-with-tools stack
+                (you can read this as the JBoss stack of the Java EE 6 APIs, with some extras
+                tools for your project, such as Arquillian for testing) and the jboss-javaee-6.0-with-hibernate
+                stack you can read this as the JBoss stack of the Java EE 6 APIs, with extras
+                from the Hibernate family of projects) -->
+            <dependency>
+                <groupId>org.jboss.bom</groupId>
+                <artifactId>jboss-javaee-6.0-with-tools</artifactId>
+                <version>${jboss.bom.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <build>
         <plugins>

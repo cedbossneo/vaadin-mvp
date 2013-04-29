@@ -172,7 +172,7 @@ public abstract class PlaceManagerImpl implements PlaceManager, Page.UriFragment
         if (placeHierarchy.size() > 0) {
             return placeHierarchy.get(placeHierarchy.size() - 1);
         } else {
-            return new PlaceRequest();
+            return new PlaceRequest("");
         }
     }
 
