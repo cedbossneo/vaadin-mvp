@@ -182,7 +182,7 @@ public class ProxyProcessor extends AbstractProcessor {
             constructor.body().invoke("super").arg(eventBusParam);
             constructor.body().add(JExpr.invoke("setProxy").arg(proxyParam));
             constructor.body().add(JExpr.invoke("setPlaceManager").arg(placeManagerParam));
-            processGateKeeper(presenter, place, constructor);
+            processGateKeeper(proxyPlaceType, place, constructor);
             processTitle(presenter, proxyPlaceClass);
             messager.printMessage(Diagnostic.Kind.NOTE, "Generated " + presenter.getSimpleName().toString() + "ProxyPlaceImpl");
             return proxyPlaceClass;
@@ -212,11 +212,11 @@ public class ProxyProcessor extends AbstractProcessor {
         }
     }
 
-    private void processGateKeeper(TypeElement presenterType, String place, JMethod constructor) {
-        if (presenterType.getAnnotation(NoGatekeeper.class) != null)
+    private void processGateKeeper(TypeElement proxyPlaceType, String place, JMethod constructor) {
+        if (proxyPlaceType.getAnnotation(NoGatekeeper.class) != null)
             constructor.body().add(JExpr.invoke("setPlace").arg(JExpr._new(jCodeModel.ref(PlaceImpl.class)).arg(place)));
         else {
-            UseGatekeeper useGatekeeper = presenterType.getAnnotation(UseGatekeeper.class);
+            UseGatekeeper useGatekeeper = proxyPlaceType.getAnnotation(UseGatekeeper.class);
             if ((useGatekeeper != null) || defaultGateKeeper != null) {
                 JInvocation placeWithGateKeeper;
                 JClass gateKeeperRef = null;
@@ -230,8 +230,8 @@ public class ProxyProcessor extends AbstractProcessor {
                 } else {
                     gateKeeperRef = jCodeModel.ref(defaultGateKeeper.getQualifiedName().toString());
                 }
-                if (presenterType.getAnnotation(GatekeeperParams.class) != null) {
-                    String[] value = presenterType.getAnnotation(GatekeeperParams.class).value();
+                if (proxyPlaceType.getAnnotation(GatekeeperParams.class) != null) {
+                    String[] value = proxyPlaceType.getAnnotation(GatekeeperParams.class).value();
                     JArray array = JExpr.newArray(jCodeModel._ref(String.class));
                     for (String s : value) {
                         array.add(JExpr.lit(s));
