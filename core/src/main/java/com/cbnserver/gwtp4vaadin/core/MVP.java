@@ -23,6 +23,7 @@ import com.cbnserver.gwtp4vaadin.core.annotations.DefaultPlace;
 import com.cbnserver.gwtp4vaadin.core.annotations.ErrorPlace;
 import com.cbnserver.gwtp4vaadin.core.annotations.UnauthorizedPlace;
 import com.cbnserver.gwtp4vaadin.core.proxy.PlaceManager;
+import com.cbnserver.gwtp4vaadin.core.proxy.Proxy;
 import com.cbnserver.gwtp4vaadin.core.proxy.ProxyPlace;
 import com.vaadin.cdi.UIScoped;
 import com.vaadin.server.VaadinSession;
@@ -49,7 +50,7 @@ public class MVP implements Serializable {
     public void init() {
         VaadinSession.getCurrent().setAttribute("mvp", this);
         rootPresenter = rootPresenterProvider.get();
-        Set<Bean<?>> proxies = beanManager.getBeans(ProxyPlace.class);
+        Set<Bean<?>> proxies = beanManager.getBeans(Proxy.class);
         for (Bean<?> proxy : proxies) {
             beanManager.getReference(proxy, proxy.getBeanClass(), beanManager.createCreationalContext(proxy));
         }

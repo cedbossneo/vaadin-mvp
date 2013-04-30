@@ -28,6 +28,6 @@ import com.cbnserver.gwtp4vaadin.core.UiHandlers;
  * Time: 10:24
  * To change this template use File | Settings | File Templates.
  */
-public interface MainUiHandlers extends UiHandlers {
+public interface HelloUiHandlers extends UiHandlers {
     public void onGo();
 }

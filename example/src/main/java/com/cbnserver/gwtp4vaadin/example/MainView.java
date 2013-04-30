@@ -22,6 +22,8 @@ package com.cbnserver.gwtp4vaadin.example;
 import com.cbnserver.gwtp4vaadin.core.ViewWithUiHandlers;
 import com.vaadin.ui.*;
 
+import javax.annotation.PostConstruct;
+
 /**
  * Created with IntelliJ IDEA.
  * User: hauber_c
@@ -29,38 +31,22 @@ import com.vaadin.ui.*;
  * Time: 10:20
  * To change this template use File | Settings | File Templates.
  */
-public class MainView extends ViewWithUiHandlers<MainUiHandlers> implements MainPresenter.MyView {
-    private VerticalLayout panel;
-    private TextField name;
-    private Label label;
+public class MainView extends ViewWithUiHandlers<HelloUiHandlers> implements MainPresenter.MyView {
 
+    private VerticalLayout panel;
+
+    @PostConstruct
+    public void createUI(){
+        panel = new VerticalLayout();
+    }
     @Override
     public Component asComponent() {
-        if (panel == null) {
-            panel = new VerticalLayout();
-            label = new Label("Hello world");
-            panel.addComponent(label);
-            name = new TextField("Your name:");
-            Button button = new Button("Go");
-            panel.addComponent(name);
-            button.addClickListener(new Button.ClickListener() {
-                @Override
-                public void buttonClick(Button.ClickEvent event) {
-                    getUiHandlers().onGo();
-                }
-            });
-            panel.addComponent(button);
-        }
         return panel;
     }
 
     @Override
-    public String getName() {
-        return name.getValue();
-    }
-
-    @Override
-    public void helloTo(String name) {
-        label.setValue(String.format("Hello world %s", name));
+    public void setInSlot(Object slot, Component content) {
+        panel.removeAllComponents();
+        panel.addComponent(content);
     }
 }

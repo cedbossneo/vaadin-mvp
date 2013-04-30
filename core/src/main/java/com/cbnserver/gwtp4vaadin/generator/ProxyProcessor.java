@@ -154,6 +154,7 @@ public class ProxyProcessor extends AbstractProcessor {
             JVar beanManagerParameter = constructor.param(BeanManager.class, "beanManager");
             constructor.body().invoke("super").arg(beanManagerParameter).arg(eventBusParameter);
             processEventsHandler(constructor.body(), presenter, presenterClass, proxyClass);
+            processContentSlot(presenter, presenterClass, constructor);
             messager.printMessage(Diagnostic.Kind.NOTE, "Generated " + presenter.getSimpleName().toString() + "ProxyImpl");
             return proxyClass;
         } catch (JClassAlreadyExistsException e) {
@@ -183,7 +184,6 @@ public class ProxyProcessor extends AbstractProcessor {
             constructor.body().add(JExpr.invoke("setPlaceManager").arg(placeManagerParam));
             processGateKeeper(presenter, place, constructor);
             processTitle(presenter, proxyPlaceClass);
-            processContentSlot(presenter, presenterClass, constructor, proxyParam);
             messager.printMessage(Diagnostic.Kind.NOTE, "Generated " + presenter.getSimpleName().toString() + "ProxyPlaceImpl");
             return proxyPlaceClass;
         } catch (Exception e) {
@@ -193,14 +193,14 @@ public class ProxyProcessor extends AbstractProcessor {
         return null;
     }
 
-    private void processContentSlot(TypeElement presenterType, JClass presenterJClass, JMethod constructor, JVar proxyParam) {
+    private void processContentSlot(TypeElement presenterType, JClass presenterJClass, JMethod constructor) {
         List<? extends Element> fields = presenterType.getEnclosedElements();
         for (Element field : fields) {
             if (!(field instanceof VariableElement))
                 continue;
             if (field.getAnnotation(ContentSlot.class) == null)
                 continue;
-            constructor.body().add(JExpr.invoke(proxyParam, "getEventBus").invoke("addHandler").arg(presenterJClass.staticRef(field.getSimpleName().toString())).arg(JExpr._new(jCodeModel.ref(RevealContentHandler.class).narrow(presenterJClass)).arg(proxyParam.invoke("getEventBus")).arg(proxyParam)));
+            constructor.body().add(JExpr.invoke("getEventBus").invoke("addHandler").arg(presenterJClass.staticRef(field.getSimpleName().toString())).arg(JExpr._new(jCodeModel.ref(RevealContentHandler.class).narrow(presenterJClass)).arg(JExpr.invoke("getEventBus")).arg(JExpr._this())));
         }
     }
 
