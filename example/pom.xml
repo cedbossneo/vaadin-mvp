@@ -25,7 +25,7 @@
     <packaging>war</packaging>
     <name>gwtp4vaadin-example</name>
     <groupId>com.cbnserver</groupId>
-    <version>1.0.6</version>
+    <version>1.0.7</version>
 
     <properties>
         <jboss.bom.version>1.0.0.Final</jboss.bom.version>
@@ -105,7 +105,7 @@
         <dependency>
             <groupId>com.cbnserver</groupId>
             <artifactId>gwtp4vaadin-core</artifactId>
-            <version>1.0.6</version>
+            <version>1.0.7</version>
         </dependency>
     </dependencies>
 
@@ -148,7 +148,7 @@
                     <dependency>
                         <groupId>com.cbnserver</groupId>
                         <artifactId>gwtp4vaadin-generator</artifactId>
-                        <version>1.0.6</version>
+                        <version>1.0.7</version>
                     </dependency>
                 </dependencies>
             </plugin>
