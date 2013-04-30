@@ -19,16 +19,15 @@
 
 package com.cbnserver.gwtp4vaadin.example;
 
-import com.cbnserver.gwtp4vaadin.core.HasUiHandlers;
 import com.cbnserver.gwtp4vaadin.core.MVPEventBus;
 import com.cbnserver.gwtp4vaadin.core.Presenter;
 import com.cbnserver.gwtp4vaadin.core.View;
-import com.cbnserver.gwtp4vaadin.core.annotations.GatekeeperParams;
-import com.cbnserver.gwtp4vaadin.core.annotations.NameToken;
+import com.cbnserver.gwtp4vaadin.core.annotations.ContentSlot;
 import com.cbnserver.gwtp4vaadin.core.annotations.ProxyStandard;
-import com.cbnserver.gwtp4vaadin.core.annotations.UseGatekeeper;
-import com.cbnserver.gwtp4vaadin.core.proxy.ProxyPlace;
+import com.cbnserver.gwtp4vaadin.core.proxy.Proxy;
+import com.cbnserver.gwtp4vaadin.core.proxy.RevealContentHandler;
 import com.cbnserver.gwtp4vaadin.core.proxy.RevealRootContentEvent;
+import com.google.gwt.event.shared.GwtEvent;
 import com.vaadin.cdi.UIScoped;
 
 import javax.inject.Inject;
@@ -41,14 +40,14 @@ import javax.inject.Inject;
  * To change this template use File | Settings | File Templates.
  */
 @UIScoped
-@UseGatekeeper(GateKeeperWithParamsTest.class)
-@GatekeeperParams(value = {"efe"})
-public class MainPresenter extends Presenter<MainPresenter.MyView, MainPresenter.MyProxy> implements MainUiHandlers {
+public class MainPresenter extends Presenter<MainPresenter.MyView, MainPresenter.MyProxy> {
+
+    @ContentSlot
+    public static final GwtEvent.Type<RevealContentHandler<?>> CONTENT = new GwtEvent.Type<RevealContentHandler<?>>();
 
     @Inject
     public MainPresenter(MyProxy proxy, MVPEventBus eventBus, MyView view) {
         super(eventBus, view, proxy);
-        getView().setUiHandlers(this);
     }
 
     @Override
@@ -56,19 +55,11 @@ public class MainPresenter extends Presenter<MainPresenter.MyView, MainPresenter
         RevealRootContentEvent.fire(this, this);
     }
 
-    @Override
-    public void onGo() {
-        getView().helloTo(getView().getName());
+    public interface MyView extends View{
+
     }
 
-    public interface MyView extends View, HasUiHandlers<MainUiHandlers> {
-        String getName();
-
-        void helloTo(String name);
-    }
-
-    @NameToken("")
     @ProxyStandard
-    public interface MyProxy extends ProxyPlace<MainPresenter> {
+    public interface MyProxy extends Proxy<MainPresenter> {
     }
 }

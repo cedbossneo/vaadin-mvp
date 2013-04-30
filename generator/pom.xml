@@ -26,7 +26,7 @@
     <artifactId>gwtp4vaadin-generator</artifactId>
     <name>gwtp4vaadin-generator</name>
     <groupId>com.cbnserver</groupId>
-    <version>1.0.2</version>
+    <version>1.0.5</version>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -59,8 +59,18 @@
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>2.5.1</version>
+                <configuration>
+                    <source>1.6</source>
+                    <target>1.6</target>
+                    <compilerArgument>-proc:none</compilerArgument>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
-                <version>2.4</version>
+                <version>2.3.1</version>
                 <configuration>
                     <archive>
                         <manifestEntries>
