@@ -21,6 +21,8 @@ package com.cbnserver.gwtp4vaadin.generator;
 
 import com.cbnserver.gwtp4vaadin.core.MVPEventBus;
 import com.cbnserver.gwtp4vaadin.core.Presenter;
+import com.cbnserver.gwtp4vaadin.core.TabContainerPresenter;
+import com.cbnserver.gwtp4vaadin.core.TabDataBasic;
 import com.cbnserver.gwtp4vaadin.core.annotations.*;
 import com.cbnserver.gwtp4vaadin.core.proxy.*;
 import com.sun.codemodel.*;
@@ -39,8 +41,11 @@ import javax.lang.model.type.TypeMirror;
 import javax.tools.Diagnostic;
 import javax.tools.StandardLocation;
 import java.io.File;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -50,7 +55,7 @@ import java.util.Set;
  * Time: 14:14
  * To change this template use File | Settings | File Templates.
  */
-@SupportedAnnotationTypes("com.cbnserver.gwtp4vaadin.core.annotations.ProxyStandard")
+@SupportedAnnotationTypes({"com.cbnserver.gwtp4vaadin.core.annotations.ProxyStandard", "com.cbnserver.gwtp4vaadin.core.annotations.DefaultGatekeeper"})
 public class ProxyProcessor extends AbstractProcessor {
 
     private final JCodeModel jCodeModel;
@@ -84,9 +89,9 @@ public class ProxyProcessor extends AbstractProcessor {
                 if (presenterType == null)
                     continue;
                 if (proxy.getAnnotation(NameToken.class) != null)
-                    createPresenterProxyPlace(presenterType, proxy, createPresenterProxy(presenterType, null));
+                    createPresenterProxyPlace(presenterType, proxy, createPresenterProxy(presenterType, proxy, false));
                 else
-                    createPresenterProxy(presenterType, proxy);
+                    createPresenterProxy(presenterType, proxy, true);
             }
             jCodeModel.build(outDir.getParentFile());
             messager.printMessage(Diagnostic.Kind.NOTE, "Annotation processor for PlaceToken done");
@@ -95,17 +100,6 @@ public class ProxyProcessor extends AbstractProcessor {
             return false;
         }
         return true;
-    }
-
-    private TypeMirror isPresenter(TypeElement proxyType) {
-        TypeMirror superclass = proxyType.getSuperclass();
-        if (superclass == null)
-            return null;
-        TypeElement element = (TypeElement) processingEnv.getTypeUtils().asElement(superclass);
-        if (element.getQualifiedName().toString().equals(Presenter.class.getCanonicalName()))
-            return superclass;
-        else
-            return isPresenter(element);
     }
 
     private void createPlaceTokenRegistry() {
@@ -130,7 +124,10 @@ public class ProxyProcessor extends AbstractProcessor {
 
     private TypeElement getProxyPresenter(TypeElement proxyType) {
         for (TypeMirror typeMirror : proxyType.getInterfaces()) {
-            if (!typeMirror.toString().startsWith(ProxyPlace.class.getCanonicalName()) && !typeMirror.toString().startsWith(Proxy.class.getCanonicalName()))
+            if (!typeMirror.toString().startsWith(ProxyPlace.class.getCanonicalName())
+                    && !typeMirror.toString().startsWith(TabContentProxyPlace.class.getCanonicalName())
+                    && !typeMirror.toString().startsWith(NonLeafTabContentProxy.class.getCanonicalName())
+                    && !typeMirror.toString().startsWith(Proxy.class.getCanonicalName()))
                 continue;
             String presenterType = typeMirror.toString().substring(typeMirror.toString().indexOf('<')).replaceAll("<|>", "");
             return processingEnv.getElementUtils().getTypeElement(presenterType);
@@ -138,21 +135,40 @@ public class ProxyProcessor extends AbstractProcessor {
         return null;
     }
 
-    public JDefinedClass createPresenterProxy(TypeElement presenter, TypeElement proxyInterface) {
+    public JDefinedClass createPresenterProxy(TypeElement presenter, TypeElement proxyInterface, boolean implement) {
         try {
             messager.printMessage(Diagnostic.Kind.NOTE, "Generating " + presenter.getSimpleName().toString() + "ProxyImpl");
             JDefinedClass proxyClass = jCodeModel._package(((PackageElement) presenter.getEnclosingElement()).getQualifiedName().toString())._class(presenter.getSimpleName() + "ProxyImpl");
             proxyClass.annotate(UIScoped.class);
             JClass presenterClass = jCodeModel.directClass(presenter.getQualifiedName().toString());
-            proxyClass._extends(jCodeModel.ref(ProxyImpl.class).narrow(presenterClass));
-            if (proxyInterface != null)
-                proxyClass._implements(jCodeModel.directClass(proxyInterface.getQualifiedName().toString()));
+            TabInfo tabInfo = null;
+            tabInfo = proxyInterface.getAnnotation(TabInfo.class);
+            JClass iface = jCodeModel.directClass(proxyInterface.getQualifiedName().toString());
+            if (tabInfo != null) {
+                proxyClass._extends(jCodeModel.ref(NonLeafTabContentProxyImpl.class).narrow(presenterClass));
+            }else
+                proxyClass._extends(jCodeModel.ref(ProxyImpl.class).narrow(presenterClass));
+            if (implement)
+                proxyClass._implements(iface);
             proxyClass.method(JMod.PUBLIC, jCodeModel.ref(Class.class).narrow(presenterClass), "getPresenter").body()._return(JExpr.dotclass(presenterClass));
             JMethod constructor = proxyClass.constructor(JMod.PUBLIC);
             constructor.annotate(Inject.class);
             JVar eventBusParameter = constructor.param(MVPEventBus.class, "eventBus");
             JVar beanManagerParameter = constructor.param(BeanManager.class, "beanManager");
             constructor.body().invoke("super").arg(beanManagerParameter).arg(eventBusParameter);
+            if (tabInfo != null){
+                constructor.body().assign(JExpr.refthis("tabData"), JExpr._new(jCodeModel.ref(TabDataBasic.class)).arg(tabInfo.label()).arg(JExpr.lit(tabInfo.priority())));
+                constructor.body().assign(JExpr.refthis("targetHistoryToken"), JExpr.lit(tabInfo.nameToken()));
+                try {
+                    //BIG Hack to retrieve annotation class
+                    tabInfo.container();
+                } catch (MirroredTypeException e) {
+                    TypeElement ref = processingEnv.getElementUtils().getTypeElement(((TypeElement) processingEnv.getTypeUtils().asElement(e.getTypeMirror())).getQualifiedName().toString());
+                    constructor.body().assign(JExpr.refthis("requestTabsEventType"), findRequestTab(ref));
+                    constructor.body().assign(JExpr.refthis("changeTabEventType"), findChangeTab(ref));
+                }
+                constructor.body().add(JExpr.invoke("addRequestTabsHandler"));
+            }
             processEventsHandler(constructor.body(), presenter, presenterClass, proxyClass);
             processContentSlot(presenter, presenterClass, constructor);
             messager.printMessage(Diagnostic.Kind.NOTE, "Generated " + presenter.getSimpleName().toString() + "ProxyImpl");
@@ -164,6 +180,28 @@ public class ProxyProcessor extends AbstractProcessor {
         return null;
     }
 
+    private JExpression findChangeTab(TypeElement container) {
+        List<? extends Element> fields = container.getEnclosedElements();
+        for (Element field : fields) {
+            if (!(field instanceof VariableElement))
+                continue;
+            if (field.getAnnotation(ChangeTab.class) != null)
+                return jCodeModel.ref(container.getQualifiedName().toString()).staticRef(field.getSimpleName().toString());
+        }
+        return null;
+    }
+
+    private JExpression findRequestTab(TypeElement container) {
+        List<? extends Element> fields = container.getEnclosedElements();
+        for (Element field : fields) {
+            if (!(field instanceof VariableElement))
+                continue;
+            if (field.getAnnotation(RequestTabs.class) != null)
+                return jCodeModel.ref(container.getQualifiedName().toString()).staticRef(field.getSimpleName().toString());
+        }
+        return null;
+    }
+
     public JDefinedClass createPresenterProxyPlace(TypeElement presenter, TypeElement proxyPlaceType, JDefinedClass presenterProxy) {
         try {
             messager.printMessage(Diagnostic.Kind.NOTE, "Generating " + presenter.getSimpleName().toString() + "ProxyPlaceImpl");
@@ -172,7 +210,10 @@ public class ProxyProcessor extends AbstractProcessor {
             JDefinedClass proxyPlaceClass = jCodeModel._package(((PackageElement) presenter.getEnclosingElement()).getQualifiedName().toString())._class(presenter.getSimpleName() + "ProxyPlaceImpl");
             proxyPlaceClass.annotate(UIScoped.class);
             JClass presenterClass = jCodeModel.directClass(presenter.getQualifiedName().toString());
-            proxyPlaceClass._extends(jCodeModel.ref(ProxyPlaceImpl.class).narrow(presenterClass));
+            if (proxyPlaceType.getAnnotation(TabInfo.class) != null)
+                proxyPlaceClass._extends(jCodeModel.ref(TabContentProxyPlaceImpl.class).narrow(presenterClass));
+            else
+                proxyPlaceClass._extends(jCodeModel.ref(ProxyPlaceImpl.class).narrow(presenterClass));
             proxyPlaceClass._implements(jCodeModel.directClass(proxyPlaceType.getQualifiedName().toString()));
             JMethod constructor = proxyPlaceClass.constructor(JMod.PUBLIC);
             constructor.annotate(Inject.class);

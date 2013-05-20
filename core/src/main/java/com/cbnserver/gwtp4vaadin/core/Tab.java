@@ -21,6 +21,7 @@ package com.cbnserver.gwtp4vaadin.core;
 
 import com.google.gwt.user.client.ui.HasText;
 import com.google.gwt.user.client.ui.Widget;
+import com.vaadin.ui.Component;
 
 /**
  * This interface represents a tab after it has been instantiated
@@ -42,7 +43,7 @@ public interface Tab extends HasText {
      *
      * @return The tab as a {@link Widget}.
      */
-    Widget asWidget();
+    Component asComponent();
 
     /**
      * Should not be called directly. Call {@link TabPanel#setActiveTab(Tab)}

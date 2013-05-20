@@ -26,12 +26,12 @@
     <artifactId>gwtp4vaadin-generator</artifactId>
     <name>gwtp4vaadin-generator</name>
     <groupId>com.cbnserver</groupId>
-    <version>1.0.7</version>
+    <version>1.0.8</version>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <jboss.bom.version>1.0.0.Final</jboss.bom.version>
-        <vaadin.version>7.0.2</vaadin.version>
+        <vaadin.version>7.0.5</vaadin.version>
         <vaadin.plugin.version>${vaadin.version}</vaadin.plugin.version>
     </properties>
 
@@ -89,6 +89,7 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>gwtp4vaadin-core</artifactId>
             <version>${project.version}</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>javax.enterprise</groupId>
