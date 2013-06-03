@@ -19,10 +19,7 @@
 
 package com.cbnserver.gwtp4vaadin.generator;
 
-import com.cbnserver.gwtp4vaadin.core.MVPEventBus;
-import com.cbnserver.gwtp4vaadin.core.Presenter;
-import com.cbnserver.gwtp4vaadin.core.TabContainerPresenter;
-import com.cbnserver.gwtp4vaadin.core.TabDataBasic;
+import com.cbnserver.gwtp4vaadin.core.*;
 import com.cbnserver.gwtp4vaadin.core.annotations.*;
 import com.cbnserver.gwtp4vaadin.core.proxy.*;
 import com.sun.codemodel.*;
@@ -141,8 +138,10 @@ public class ProxyProcessor extends AbstractProcessor {
             JDefinedClass proxyClass = jCodeModel._package(((PackageElement) presenter.getEnclosingElement()).getQualifiedName().toString())._class(presenter.getSimpleName() + "ProxyImpl");
             proxyClass.annotate(UIScoped.class);
             JClass presenterClass = jCodeModel.directClass(presenter.getQualifiedName().toString());
-            TabInfo tabInfo = null;
-            tabInfo = proxyInterface.getAnnotation(TabInfo.class);
+            TabInfo tabInfo = proxyInterface.getAnnotation(TabInfo.class);
+            ExecutableElement presenterTabInfo = findTabInfo(presenter);
+            if (presenterTabInfo != null)
+                tabInfo = presenterTabInfo.getAnnotation(TabInfo.class);
             JClass iface = jCodeModel.directClass(proxyInterface.getQualifiedName().toString());
             if (tabInfo != null) {
                 proxyClass._extends(jCodeModel.ref(NonLeafTabContentProxyImpl.class).narrow(presenterClass));
@@ -157,7 +156,12 @@ public class ProxyProcessor extends AbstractProcessor {
             JVar beanManagerParameter = constructor.param(BeanManager.class, "beanManager");
             constructor.body().invoke("super").arg(beanManagerParameter).arg(eventBusParameter);
             if (tabInfo != null){
-                constructor.body().assign(JExpr.refthis("tabData"), JExpr._new(jCodeModel.ref(TabDataBasic.class)).arg(tabInfo.label()).arg(JExpr.lit(tabInfo.priority())));
+                if (presenterTabInfo != null && presenterTabInfo.getReturnType().toString().equals(String.class.getCanonicalName()))
+                    constructor.body().assign(JExpr.refthis("tabData"), JExpr._new(jCodeModel.ref(TabDataBasic.class)).arg(jCodeModel.ref(presenter.getQualifiedName().toString()).staticInvoke(presenterTabInfo.getSimpleName().toString())).arg(JExpr.lit(tabInfo.priority())));
+                else if (presenterTabInfo != null && presenterTabInfo.getReturnType().toString().equals(TabData.class.getCanonicalName()))
+                    constructor.body().assign(JExpr.refthis("tabData"), jCodeModel.ref(presenter.getQualifiedName().toString()).staticInvoke(presenterTabInfo.getSimpleName().toString()));
+                else
+                    constructor.body().assign(JExpr.refthis("tabData"), JExpr._new(jCodeModel.ref(TabDataBasic.class)).arg(tabInfo.label()).arg(JExpr.lit(tabInfo.priority())));
                 constructor.body().assign(JExpr.refthis("targetHistoryToken"), JExpr.lit(tabInfo.nameToken()));
                 try {
                     //BIG Hack to retrieve annotation class
@@ -202,6 +206,16 @@ public class ProxyProcessor extends AbstractProcessor {
         return null;
     }
 
+    private ExecutableElement findTabInfo(TypeElement container) {
+        List<? extends Element> fields = container.getEnclosedElements();
+        for (Element method : fields) {
+            if (!(method instanceof ExecutableElement))
+                continue;
+            if (method.getAnnotation(TabInfo.class) != null)
+                return (ExecutableElement)method;
+        }
+        return null;
+    }
     public JDefinedClass createPresenterProxyPlace(TypeElement presenter, TypeElement proxyPlaceType, JDefinedClass presenterProxy) {
         try {
             messager.printMessage(Diagnostic.Kind.NOTE, "Generating " + presenter.getSimpleName().toString() + "ProxyPlaceImpl");
@@ -210,7 +224,7 @@ public class ProxyProcessor extends AbstractProcessor {
             JDefinedClass proxyPlaceClass = jCodeModel._package(((PackageElement) presenter.getEnclosingElement()).getQualifiedName().toString())._class(presenter.getSimpleName() + "ProxyPlaceImpl");
             proxyPlaceClass.annotate(UIScoped.class);
             JClass presenterClass = jCodeModel.directClass(presenter.getQualifiedName().toString());
-            if (proxyPlaceType.getAnnotation(TabInfo.class) != null)
+            if (proxyPlaceType.getAnnotation(TabInfo.class) != null || findTabInfo(presenter) != null)
                 proxyPlaceClass._extends(jCodeModel.ref(TabContentProxyPlaceImpl.class).narrow(presenterClass));
             else
                 proxyPlaceClass._extends(jCodeModel.ref(ProxyPlaceImpl.class).narrow(presenterClass));

@@ -26,7 +26,7 @@
     <artifactId>gwtp4vaadin-core</artifactId>
     <name>gwtp4vaadin-core</name>
     <groupId>com.cbnserver</groupId>
-    <version>1.0.8</version>
+    <version>1.0.9</version>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -131,6 +131,7 @@
             <groupId>com.vaadin</groupId>
             <artifactId>vaadin-client</artifactId>
             <version>${vaadin.version}</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.vaadin</groupId>

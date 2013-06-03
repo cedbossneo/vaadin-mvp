@@ -69,8 +69,8 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * {@code @}TabInfo(
  *    container = TabStripPresenter.class,
  *    priority = 0 )
- * static String getLabel(MyGingector ginjector) {
- *   return gingector.getTranslations().homePageLabel();
+ * static String getLabel() {
+ *   return "";
  * }
  * </pre>
  * <p/>
@@ -92,17 +92,9 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  *    container = TabStripPresenter.class,
  *    priority = 1,
  *    nameToken = "SETTINGS-USER")
- * static TabData getTabData(MyGingector ginjector) {
- *   return ginjector.getTabDataFactory().createUserTabData();
+ * static TabData getTabData() {
+ *   return new TabDataBasic("", 1);
  * }
- * </pre>
- * <p/>
- * <pre>
- * {@code @}TabInfo(container = ApplicationPresenter.class)
- * static TabData getTabData(Messages msgs, IsAdminGateKeeper keeper) {
- *   return new TabDataExt(msgs.adminTitle(), 1000, keeper);;
- * }
- * </pre>
  *
  * @author Philippe Beaudoin
  */
