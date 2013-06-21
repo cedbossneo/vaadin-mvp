@@ -19,7 +19,9 @@
 
 package com.cbnserver.gwtp4vaadin.generator;
 
-import com.cbnserver.gwtp4vaadin.core.*;
+import com.cbnserver.gwtp4vaadin.core.MVPEventBus;
+import com.cbnserver.gwtp4vaadin.core.TabData;
+import com.cbnserver.gwtp4vaadin.core.TabDataBasic;
 import com.cbnserver.gwtp4vaadin.core.annotations.*;
 import com.cbnserver.gwtp4vaadin.core.proxy.*;
 import com.sun.codemodel.*;
@@ -37,13 +39,13 @@ import javax.lang.model.type.MirroredTypeException;
 import javax.lang.model.type.TypeMirror;
 import javax.tools.Diagnostic;
 import javax.tools.StandardLocation;
-import java.io.File;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
+import java.io.Closeable;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
+import java.util.Stack;
 
 /**
  * Created with IntelliJ IDEA.
@@ -69,10 +71,7 @@ public class ProxyProcessor extends AbstractProcessor {
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
         try {
             messager = processingEnv.getMessager();
-            File outDir = new File(processingEnv.getFiler().getResource(StandardLocation.SOURCE_OUTPUT, "", "mvp.xml").toUri().getPath());
-            messager.printMessage(Diagnostic.Kind.NOTE, "ProxyProcessor - Output directory is : " + outDir.getParent().toString());
-            messager.printMessage(Diagnostic.Kind.NOTE, "Creating PlaceTokenRegistry");
-            createPlaceTokenRegistry();
+            messager.printMessage(Diagnostic.Kind.NOTE, "ProxyProcessor");
             messager.printMessage(Diagnostic.Kind.NOTE, "Executing annotation processor for NameToken");
             Set<TypeElement> proxies = (Set<TypeElement>) roundEnv.getElementsAnnotatedWith(ProxyStandard.class);
             Set<TypeElement> gateKeepers = (Set<TypeElement>) roundEnv.getElementsAnnotatedWith(DefaultGatekeeper.class);
@@ -81,6 +80,8 @@ public class ProxyProcessor extends AbstractProcessor {
                 defaultGateKeeper = gateKeepers.iterator().next();
                 messager.printMessage(Diagnostic.Kind.NOTE, "Found default gatekeeper");
             }
+            if (proxies.size() > 0)
+                createPlaceTokenRegistry();
             for (TypeElement proxy : proxies) {
                 TypeElement presenterType = getProxyPresenter(proxy);
                 if (presenterType == null)
@@ -90,8 +91,22 @@ public class ProxyProcessor extends AbstractProcessor {
                 else
                     createPresenterProxy(presenterType, proxy, true);
             }
-            jCodeModel.build(outDir.getParentFile());
+            jCodeModel.build(new CodeWriter() {
+                Stack<OutputStream> streams = new Stack<OutputStream>();
+
+                @Override
+                public OutputStream openBinary(JPackage pkg, String fileName) throws IOException {
+                    return streams.push(processingEnv.getFiler().createResource(StandardLocation.SOURCE_OUTPUT, pkg.name(), fileName).openOutputStream());
+                }
+
+                @Override
+                public void close() throws IOException {
+                    while (!streams.empty())
+                        streams.pop().close();
+                }
+            });
             messager.printMessage(Diagnostic.Kind.NOTE, "Annotation processor for PlaceToken done");
+            ((Closeable)processingEnv.getFiler()).close();
         } catch (Exception e) {
             e.printStackTrace();
             return false;
@@ -103,6 +118,7 @@ public class ProxyProcessor extends AbstractProcessor {
         if (jCodeModel._getClass("PlaceTokenRegistryImpl") != null)
             return;
         try {
+            messager.printMessage(Diagnostic.Kind.NOTE, "Creating PlaceTokenRegistry");
             JDefinedClass placeTokenRegistry = jCodeModel._class("PlaceTokenRegistryImpl");
             placeTokenRegistry._implements(PlaceTokenRegistry.class);
             placeTokenRegistry.annotate(Singleton.class);

@@ -26,12 +26,12 @@
     <artifactId>gwtp4vaadin-core</artifactId>
     <name>gwtp4vaadin-core</name>
     <groupId>com.cbnserver</groupId>
-    <version>1.0.9</version>
+    <version>1.0.10</version>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <jboss.bom.version>1.0.0.Final</jboss.bom.version>
-        <vaadin.version>7.0.5</vaadin.version>
+        <vaadin.version>7.0.7</vaadin.version>
         <vaadin.plugin.version>${vaadin.version}</vaadin.plugin.version>
     </properties>
 
