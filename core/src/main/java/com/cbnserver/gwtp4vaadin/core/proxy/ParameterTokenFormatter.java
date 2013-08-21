@@ -19,9 +19,9 @@
 
 package com.cbnserver.gwtp4vaadin.core.proxy;
 
-import com.google.gwt.http.client.URL;
-
 import javax.inject.Inject;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -44,7 +44,7 @@ import java.util.Set;
  * <p/>
  * Before decoding a {@link String} URL fragment into a {@link PlaceRequest} or a
  * {@link PlaceRequest} hierarchy, {@link ParameterTokenFormatter} will first pass the
- * {@link String} through {@link URL#decodeQueryString(String)} so that if the URL was URL-encoded
+ * {@link String} through URLDecoder.decode so that if the URL was URL-encoded
  * by some user agent, like a mail user agent, it is still parsed correctly.
  * <p/>
  * For example, {@link ParameterTokenFormatter} would parse any of the following:
@@ -99,7 +99,7 @@ public class ParameterTokenFormatter implements TokenFormatter {
     /**
      * This constructor makes it possible to use custom separators in your token formatter. The
      * separators must be 1-letter strings, they must all be different from one another, and they
-     * must be encoded when ran through {@link URL#encodeQueryString(String)}).
+     * must be encoded when ran through URLEncoder.encode.
      *
      * @param hierarchySeparator The symbol used to separate {@link PlaceRequest} in a hierarchy.
      *                           Must be a 1-character string and can't be {@code %}.
@@ -115,9 +115,9 @@ public class ParameterTokenFormatter implements TokenFormatter {
         assert !hierarchySeparator.equals(paramSeparator);
         assert !hierarchySeparator.equals(valueSeparator);
         assert !paramSeparator.equals(valueSeparator);
-        assert !valueSeparator.equals(URL.encodeQueryString(valueSeparator));
-        assert !hierarchySeparator.equals(URL.encodeQueryString(hierarchySeparator));
-        assert !paramSeparator.equals(URL.encodeQueryString(paramSeparator));
+        assert !valueSeparator.equals(URLEncoder.encode(valueSeparator));
+        assert !hierarchySeparator.equals(URLEncoder.encode(hierarchySeparator));
+        assert !paramSeparator.equals(URLEncoder.encode(paramSeparator));
         assert !hierarchySeparator.equals("%");
         assert !paramSeparator.equals("%");
         assert !valueSeparator.equals("%");
@@ -144,12 +144,12 @@ public class ParameterTokenFormatter implements TokenFormatter {
 
     @Override
     public PlaceRequest toPlaceRequest(String placeToken) throws TokenFormatException {
-        return unescapedStringToPlaceRequest(URL.decodeQueryString(placeToken));
+        return unescapedStringToPlaceRequest(URLDecoder.decode(placeToken));
     }
 
     /**
      * Converts an unescaped string to a place request. To unescape the hash fragment you must run it
-     * through {@link URL#decodeQueryString(String)}.
+     * through URLDecoder.decode.
      *
      * @param unescapedPlaceToken The unescaped string to convert to a place request.
      * @return The place request.
@@ -198,7 +198,7 @@ public class ParameterTokenFormatter implements TokenFormatter {
 
     @Override
     public List<PlaceRequest> toPlaceRequestHierarchy(String historyToken) throws TokenFormatException {
-        String unescapedHistoryToken = URL.decodeQueryString(historyToken);
+        String unescapedHistoryToken = URLDecoder.decode(historyToken);
 
         int split = unescapedHistoryToken.indexOf(hierarchySeparator);
         List<PlaceRequest> result = new ArrayList<PlaceRequest>();
@@ -252,7 +252,7 @@ public class ParameterTokenFormatter implements TokenFormatter {
     /**
      * Use our custom escaping mechanism to escape the provided string. This should be used on the
      * name token, and the parameter keys and values, before they are attached with the various
-     * separators. The string will also be passed through {@link URL#encodeQueryString}.
+     * separators. The string will also be passed through URLEncoder.encode.
      * Visible for testing.
      *
      * @param string The string to escape.
@@ -281,16 +281,16 @@ public class ParameterTokenFormatter implements TokenFormatter {
             }
         }
 
-        return URL.encodeQueryString(builder.toString());
+        return URLEncoder.encode(builder.toString());
     }
 
     /**
      * Use our custom escaping mechanism to unescape the provided string. This should be used on the
      * name token, and the parameter keys and values, after they have been split using the various
      * separators. The input string is expected to already be sent through
-     * {@link URL#decodeQueryString}.
+     * URLDecoder.decode.
      *
-     * @param string The string to unescape, must have passed through {@link URL#decodeQueryString}.
+     * @param string The string to unescape, must have passed through URLDecoder.decode.
      * @return The unescaped string.
      * @throws TokenFormatException if there is an error converting.
      */
