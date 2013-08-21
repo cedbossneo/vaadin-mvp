@@ -19,7 +19,6 @@
 
 package com.cbnserver.gwtp4vaadin.core.proxy;
 
-import com.cbnserver.gwtp4vaadin.core.MVPEventBus;
 import com.cbnserver.gwtp4vaadin.core.Presenter;
 
 /**
@@ -40,7 +39,6 @@ public class ProxyPlaceImpl<P extends Presenter<?, ?>> extends
      * invoked by setting a history token that matches its name token in the URL
      * bar.
      */
-    public ProxyPlaceImpl(MVPEventBus eventBus) {
-        super(eventBus);
+    public ProxyPlaceImpl() {
     }
 }

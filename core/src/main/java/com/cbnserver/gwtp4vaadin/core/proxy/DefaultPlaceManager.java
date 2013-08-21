@@ -61,9 +61,10 @@ public class DefaultPlaceManager extends PlaceManagerImpl {
                                @ErrorPlace String errorPlaceNameToken,
                                @UnauthorizedPlace String unauthorizedPlaceNameToken) {
         super(eventBus, tokenFormatter);
-        defaultPlaceRequest = new PlaceRequest(defaultPlaceNameToken);
-        errorPlaceRequest = new PlaceRequest(errorPlaceNameToken);
-        unauthorizedPlaceRequest = new PlaceRequest(unauthorizedPlaceNameToken);
+
+        defaultPlaceRequest = new PlaceRequest.Builder().nameToken(defaultPlaceNameToken).build();
+        errorPlaceRequest = new PlaceRequest.Builder().nameToken(errorPlaceNameToken).build();
+        unauthorizedPlaceRequest = new PlaceRequest.Builder().nameToken(unauthorizedPlaceNameToken).build();
     }
 
     @Override

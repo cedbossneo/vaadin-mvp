@@ -19,9 +19,9 @@
 
 package com.cbnserver.gwtp4vaadin.core.proxy;
 
-import com.cbnserver.gwtp4vaadin.core.MVPEventBus;
-import com.cbnserver.gwtp4vaadin.core.Presenter;
+import com.cbnserver.gwtp4vaadin.core.*;
 import com.google.gwt.event.shared.GwtEvent;
+import com.google.web.bindery.event.shared.HandlerRegistration;
 
 /**
  * A useful mixing class to define a {@link Proxy} that is also a {@link Place}.
@@ -30,12 +30,36 @@ import com.google.gwt.event.shared.GwtEvent;
  *
  * @param <P>      The Presenter's type.
  * @param <Proxy_> Type of the associated {@link Proxy}.
- * @author David Peterson
- * @author Philippe Beaudoin
- * @author Christian Goudreau
  */
-public class ProxyPlaceAbstract<P extends Presenter<?, ?>, Proxy_ extends Proxy<P>>
-        implements ProxyPlace<P> {
+public class ProxyPlaceAbstract<P extends Presenter<?, ?>, Proxy_ extends Proxy<P>> implements ProxyPlace<P>,
+        HasHandlerContainer {
+    /**
+     * Hides {@link com.cbnserver.gwtp4vaadin.core.HandlerContainer#bind()} and
+     * {@link com.cbnserver.gwtp4vaadin.core.HandlerContainer#unbind()} from implementers.
+     */
+    private class ProxyHandlerContainer extends HandlerContainerImpl {
+        private boolean wasBound;
+
+        @Override
+        protected void registerHandler(HandlerRegistration handlerRegistration) {
+            super.registerHandler(handlerRegistration);
+
+            // Visibility is limited to this package, so registerHandler can only be call by ProxyPlaceAbstract#bind()
+            wasBound = true;
+        }
+
+        @Override
+        public void bind() {
+            // Was never bound, so rebinding it does not make sense.
+            if (wasBound) {
+                super.bind();
+
+                ProxyPlaceAbstract.this.bind(placeManager, eventBus);
+            }
+        }
+    }
+
+    private final ProxyHandlerContainer handlerContainer = new ProxyHandlerContainer();
 
     private Place place;
     private PlaceManager placeManager;
@@ -49,42 +73,7 @@ public class ProxyPlaceAbstract<P extends Presenter<?, ?>, Proxy_ extends Proxy<
      * invoked by setting a history token that matches its name token in the URL
      * bar.
      */
-    public ProxyPlaceAbstract(MVPEventBus eventBus) {
-        this.eventBus = eventBus;
-        eventBus.addHandler(PlaceRequestInternalEvent.getType(),
-                new PlaceRequestInternalHandler() {
-                    @Override
-                    public void onPlaceRequest(PlaceRequestInternalEvent event) {
-                        if (event.isHandled()) {
-                            return;
-                        }
-                        PlaceRequest request = event.getRequest();
-                        if (matchesRequest(request)) {
-                            event.setHandled();
-                            if (canReveal()) {
-                                handleRequest(request, event.shouldUpdateBrowserHistory());
-                            } else {
-                                event.setUnauthorized();
-                            }
-                        }
-                    }
-                });
-        eventBus.addHandler(GetPlaceTitleEvent.getType(),
-                new GetPlaceTitleHandler() {
-                    @Override
-                    public void onGetPlaceTitle(GetPlaceTitleEvent event) {
-                        if (event.isHandled()) {
-                            return;
-                        }
-                        PlaceRequest request = event.getRequest();
-                        if (matchesRequest(request)) {
-                            if (canReveal()) {
-                                event.setHandled();
-                                getPlaceTitle(event);
-                            }
-                        }
-                    }
-                });
+    public ProxyPlaceAbstract() {
     }
 
     @Override
@@ -138,6 +127,11 @@ public class ProxyPlaceAbstract<P extends Presenter<?, ?>, Proxy_ extends Proxy<
         return place.matchesRequest(request);
     }
 
+    @Override
+    public HandlerContainer getHandlerContainer() {
+        return handlerContainer;
+    }
+
     // /////////////////////
     // Protected methods that can be overridden
 
@@ -174,6 +168,54 @@ public class ProxyPlaceAbstract<P extends Presenter<?, ?>, Proxy_ extends Proxy<
     }
 
     /**
+     * Injects the various resources and performs other bindings.
+     * <p/>
+     * Never call directly, it should only be called by GIN. Method injection is
+     * used instead of constructor injection, because the latter doesn't work well
+     * with GWT generators.
+     *
+     * @param placeManager The {@link PlaceManager}.
+     * @param eventBus     The {@link MVPEventBus}.
+     */
+    protected void bind(final PlaceManager placeManager, MVPEventBus eventBus) {
+        this.placeManager = placeManager;
+        this.eventBus = eventBus;
+
+        addRegisteredHandler(PlaceRequestInternalEvent.getType(), new PlaceRequestInternalHandler() {
+            @Override
+            public void onPlaceRequest(PlaceRequestInternalEvent event) {
+                if (event.isHandled()) {
+                    return;
+                }
+                PlaceRequest request = event.getRequest();
+                if (matchesRequest(request)) {
+                    event.setHandled();
+                    if (canReveal()) {
+                        handleRequest(request, event.shouldUpdateBrowserHistory());
+                    } else {
+                        event.setUnauthorized();
+                    }
+                }
+            }
+        });
+        addRegisteredHandler(GetPlaceTitleEvent.getType(), new GetPlaceTitleHandler() {
+            @Override
+            public void onGetPlaceTitle(GetPlaceTitleEvent event) {
+                if (event.isHandled()) {
+                    return;
+                }
+                PlaceRequest request = event.getRequest();
+                if (matchesRequest(request)) {
+                    if (canReveal()) {
+                        event.setHandled();
+                        getPlaceTitle(event);
+                    }
+                }
+            }
+        });
+    }
+
+    /**
      * Obtains the title for this place and invoke the passed handler when the
      * title is available. By default, places don't have a title and will invoke
      * the handler with {@code null}, but override this method to provide your own
@@ -184,6 +226,19 @@ public class ProxyPlaceAbstract<P extends Presenter<?, ?>, Proxy_ extends Proxy<
      */
     protected void getPlaceTitle(GetPlaceTitleEvent event) {
         event.getHandler().onSetPlaceTitle(null);
+    }
+
+    /**
+     * Register an event to be automatically removed when this proxy will be released.
+     * You will have to register your event again if you rebind this proxy.
+     *
+     * @param type    The event type
+     * @param handler The handler to register.
+     * @param <H>     The handler type
+     */
+    protected <H> void addRegisteredHandler(GwtEvent.Type<H> type, H handler) {
+        HandlerRegistration registration = eventBus.addHandler(type, handler);
+        handlerContainer.registerHandler(registration);
     }
 
     /**

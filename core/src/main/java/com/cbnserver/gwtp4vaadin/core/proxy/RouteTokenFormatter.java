@@ -1,8 +1,5 @@
-/*
- * Copyright 2013 Cedric Hauber.
- *
- * Some methods, files, concepts came from ArcBees Inc.
- * http://code.google.com/p/gwt-platform/
+/**
+ * Copyright 2013 ArcBees Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -27,46 +24,40 @@ import java.util.*;
 
 /**
  * Implementation of {@link TokenFormatter} with support for route like place names.
- * <p/>
+ *
  * <p>
  * Instead of wiring a hierarchy of several places bound to multiple presenters this implements a flat structure where
  * every history token is bound to a single presenter.
  * </p>
- * <p/>
+ *
  * <p>
  * Usage:
  * </p>
- * <p/>
- * <p>
- * Replace the default binding to {@link ParameterTokenFormatter} with {@link RouteTokenFormatter}. In case you use
- * GWTPs {@link DefaultModule}:
- * </p>
- * <p/>
+ *
  * <pre>
  * install(new DefaultModule(DefaultPlaceManager.class, RouteTokenFormatter.class));
  * </pre>
- * <p/>
+ *
  * <p>
  * Now all @NameToken's are treated as routes. Routes are expected to start with an '/' and can contain path parameters
  * as well as query parameters.
  * </p>
- * <p/>
- * <pre>
  *
- * @NameToken("/user/{userId}/privacy") // Token for PrivacyPresenter
+ * <pre>
+ * @NameToken("/user/{userId}/privacy")         // Token for PrivacyPresenter
  * @NameToken("/user/{userId}/privacy/profile") // Token for PrivacyProfilePresenter
- * @NameToken("/user/{userId}/privacy/photos") // Token for PrivacyPhotosPresenter
+ * @NameToken("/user/{userId}/privacy/photos")  // Token for PrivacyPhotosPresenter
  * </pre>
- * <p/>
+ *
  * <p>
  * Static-parts of an route tie stronger than parameter-parts. This way following works:
  * </p>
- * <p/>
+ *
  * <pre>
  * @NameToken("/{vanityId}") // Token for VanityUrlPresenter
- * @NameToken("/privacy") // Token for PrivacyPresenter
+ * @NameToken("/privacy")    // Token for PrivacyPresenter
  * </pre>
- * <p/>
+ *
  * <p>
  * Note: For the moment this is implemented on top of the hierarchical-place API to not an big structural changes prior
  * 1.0 release.
@@ -109,9 +100,9 @@ public class RouteTokenFormatter implements TokenFormatter {
         /**
          * Construct a new {@link RouteMatch}.
          *
-         * @param route         Place token associated to the match.
+         * @param route Place token associated to the match.
          * @param staticMatches Number of static matches in this route.
-         * @param parameters    Parsed parameters of this route.
+         * @param parameters Parsed parameters of this route.
          */
         RouteMatch(String route, int staticMatches, Map<String, String> parameters) {
             this.route = route;
@@ -120,7 +111,7 @@ public class RouteTokenFormatter implements TokenFormatter {
         }
 
         /**
-         * Sort {@link RouteMatch}s by the amount of {@link #staticMatchtes}.
+         * Sort {@link RouteMatch}s by the amount of {@link #staticMatches}.
          */
         @Override
         public int compareTo(RouteMatch other) {
@@ -134,7 +125,7 @@ public class RouteTokenFormatter implements TokenFormatter {
     private class RouteMatcher {
         /**
          * All matching routes of the place-token.
-         * <p/>
+         *
          * Sorted in ascending order by the number of static matches.
          */
         final TreeSet<RouteMatch> allMatches;
@@ -259,7 +250,7 @@ public class RouteTokenFormatter implements TokenFormatter {
 
         match.parameters = parseQueryString(query, match.parameters);
 
-        return new PlaceRequest(match.route, match.parameters);
+        return new PlaceRequest.Builder().nameToken(match.route).with(match.parameters).build();
     }
 
     @Override
@@ -274,7 +265,7 @@ public class RouteTokenFormatter implements TokenFormatter {
      * Parse the given query-string and store all parameters into a map.
      *
      * @param queryString The query-string.
-     * @param into        The map to use. If the given map is <code>null</code> a new map will be created.
+     * @param into The map to use. If the given map is <code>null</code> a new map will be created.
      * @return A map containing all keys value pairs of the query-string.
      */
     Map<String, String> parseQueryString(final String queryString, Map<String, String> into) {

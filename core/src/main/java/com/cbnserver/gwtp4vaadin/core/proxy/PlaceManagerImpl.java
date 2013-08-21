@@ -29,10 +29,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * This is the default implementation of the {@link PlaceManager}.
+ * Default implementation to be extended of the {@link PlaceManager}.
  *
- * @author Philippe Beaudoin
- * @author Christian Goudreau
+ * @see DefaultPlaceManager
  */
 public abstract class PlaceManagerImpl implements PlaceManager, Page.UriFragmentChangedListener {
 
@@ -120,7 +119,7 @@ public abstract class PlaceManagerImpl implements PlaceManager, Page.UriFragment
     @Override
     public void navigateBack() {
         page.setUriFragment(currentHistoryToken);
-    }
+        }
 
     /**
      * Fires the {@link PlaceRequestInternalEvent} for the given
@@ -172,7 +171,7 @@ public abstract class PlaceManagerImpl implements PlaceManager, Page.UriFragment
         if (placeHierarchy.size() > 0) {
             return placeHierarchy.get(placeHierarchy.size() - 1);
         } else {
-            return new PlaceRequest("");
+            return new PlaceRequest.Builder().build();
         }
     }
 

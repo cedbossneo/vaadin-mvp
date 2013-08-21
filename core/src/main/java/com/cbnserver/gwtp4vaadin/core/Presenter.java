@@ -227,6 +227,24 @@ public abstract class Presenter<V extends View, Proxy_ extends Proxy<?>> extends
         this.slot = slot;
     }
 
+    @Override
+    public final void bind() {
+        super.bind();
+
+        if (getProxy() instanceof HasHandlerContainer) {
+            ((HasHandlerContainer) getProxy()).getHandlerContainer().bind();
+        }
+    }
+
+    @Override
+    public final void unbind() {
+        super.unbind();
+
+        if (getProxy() instanceof HasHandlerContainer) {
+            ((HasHandlerContainer) getProxy()).getHandlerContainer().unbind();
+        }
+    }
+
     /**
      * Reveals the presenter, bypassing any service offered by the
      * {@link com.cbnserver.gwtp4vaadin.core.proxy.PlaceManager PlaceManager}.

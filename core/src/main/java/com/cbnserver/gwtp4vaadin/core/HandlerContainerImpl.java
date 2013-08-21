@@ -92,7 +92,7 @@ public class HandlerContainerImpl implements HandlerContainer {
 
     @Override
     @PostConstruct
-    public final void bind() {
+    public void bind() {
         if (!bound.value) {
             onBind();
             bound.value = true;
@@ -106,7 +106,7 @@ public class HandlerContainerImpl implements HandlerContainer {
 
     @Override
     @PreDestroy
-    public final void unbind() {
+    public void unbind() {
         if (bound.value) {
             bound.value = false;
 

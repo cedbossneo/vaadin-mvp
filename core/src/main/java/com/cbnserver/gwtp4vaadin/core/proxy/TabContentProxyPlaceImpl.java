@@ -19,7 +19,6 @@
 
 package com.cbnserver.gwtp4vaadin.core.proxy;
 
-import com.cbnserver.gwtp4vaadin.core.MVPEventBus;
 import com.cbnserver.gwtp4vaadin.core.Presenter;
 import com.cbnserver.gwtp4vaadin.core.Tab;
 import com.cbnserver.gwtp4vaadin.core.TabData;
@@ -41,8 +40,7 @@ public class TabContentProxyPlaceImpl<T extends Presenter<?, ?>> extends
      * invoked by setting a history token that matches its name token in the URL
      * bar.
      */
-    public TabContentProxyPlaceImpl(MVPEventBus eventBus) {
-        super(eventBus);
+    public TabContentProxyPlaceImpl() {
     }
 
     @Override

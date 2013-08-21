@@ -250,9 +250,9 @@ public class ProxyProcessor extends AbstractProcessor {
             JVar proxyParam = constructor.param(presenterProxy, "proxy");
             JVar eventBusParam = constructor.param(MVPEventBus.class, "eventBus");
             JVar placeManagerParam = constructor.param(PlaceManager.class, "placeManager");
-            constructor.body().invoke("super").arg(eventBusParam);
             constructor.body().add(JExpr.invoke("setProxy").arg(proxyParam));
             constructor.body().add(JExpr.invoke("setPlaceManager").arg(placeManagerParam));
+            constructor.body().add(JExpr.invoke("bind").arg(placeManagerParam).arg(eventBusParam));
             processGateKeeper(proxyPlaceType, place, constructor);
             processTitle(presenter, proxyPlaceClass);
             messager.printMessage(Diagnostic.Kind.NOTE, "Generated " + presenter.getSimpleName().toString() + "ProxyPlaceImpl");
