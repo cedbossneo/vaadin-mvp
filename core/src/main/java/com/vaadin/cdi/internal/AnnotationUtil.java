@@ -16,6 +16,7 @@
 package com.vaadin.cdi.internal;
 
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 
 import javax.enterprise.inject.Any;
@@ -75,7 +76,9 @@ public class AnnotationUtil {
         Set<Class<? extends UI>> uiBeans = MVP.getSubTypesOf(UI.class);
         HashSet<Bean<?>> beans = new HashSet<Bean<?>>();
         for (Class<?> uiBean : uiBeans) {
-            beans.add(beanManager.getBeans(uiBean).iterator().next());
+            Iterator<Bean<?>> iterator = beanManager.getBeans(uiBean).iterator();
+            if (iterator.hasNext())
+                beans.add(iterator.next());
         }
         return beans;
     }

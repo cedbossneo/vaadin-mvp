@@ -26,11 +26,11 @@
     <artifactId>gwtp4vaadin-generator</artifactId>
     <name>gwtp4vaadin-generator</name>
     <groupId>com.cbnserver</groupId>
-    <version>1.0.12</version>
+    <version>1.0.13</version>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <vaadin.version>7.1.9</vaadin.version>
+        <vaadin.version>7.1.10</vaadin.version>
         <vaadin.plugin.version>${vaadin.version}</vaadin.plugin.version>
     </properties>
 

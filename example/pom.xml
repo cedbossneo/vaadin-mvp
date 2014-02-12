@@ -25,11 +25,11 @@
     <packaging>war</packaging>
     <name>gwtp4vaadin-example</name>
     <groupId>com.cbnserver</groupId>
-    <version>1.0.12</version>
+    <version>1.0.13</version>
 
     <properties>
         <jboss.bom.version>1.0.0.Final</jboss.bom.version>
-        <vaadin.version>7.1.9</vaadin.version>
+        <vaadin.version>7.1.10</vaadin.version>
     </properties>
 
     <repositories>
@@ -193,7 +193,7 @@
                     <noServer>true</noServer>
                     <!-- Remove draftCompile when project is ready -->
                     <draftCompile>false</draftCompile>
-                    <compileReport>true</compileReport>
+                    <compileReport>false</compileReport>
                     <style>OBF</style>
                     <strict>true</strict>
                     <runTarget>http://localhost:8080/</runTarget>
