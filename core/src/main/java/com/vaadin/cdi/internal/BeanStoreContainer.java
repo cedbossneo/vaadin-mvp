@@ -16,20 +16,17 @@
 
 package com.vaadin.cdi.internal;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import java.io.Serializable;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
-import javax.enterprise.context.SessionScoped;
-
 /**
  * BeanStoreContainer associates a UI instance with a UIBeanStore. There is only
  * one BeanStoreContainer per session. A BeanStoreContainer is @see @SessionScoped
  */
-@SessionScoped
 @SuppressWarnings("serial")
 public class BeanStoreContainer implements Serializable {
 

@@ -56,7 +56,7 @@ public class CDIUIProvider extends DefaultUIProvider implements Serializable {
                         + " is not annotated with CDIUI!");
             }
         }
-        UIBean uiBean = new UIBean(bean, uiId);
+        UIBean uiBean = new UIBean(bean, uiId, request);
         try {
             // Make the UIBean available to UIScopedContext when creating nested
             // injected objects

@@ -37,11 +37,18 @@ import javax.enterprise.inject.Stereotype;
 public @interface CDIUI {
 
     /**
-     * An optional URI mapping. If not specified, the mapping is going to be
-     * derived from the simple name of the class. A class WelcomeVaadin is going
-     * to be bound to "/welcomeVaadin" uri.
-     * 
+     * An optional URI mapping. If not specified, the mapping is going to be derived from the simple name of the class.
+     * A class WelcomeVaadin is going to be bound to "/welcomeVaadin" uri.
+     *
      * @return the URI mapping of this UI
      */
     public String value() default "";
+
+    /**
+     * Determines whether the dynamically deployed servlet should support async operation. For backward compatibility it
+     * defaults to false.
+     *
+     * @return
+     */
+    public boolean asyncSupported() default false;
 }

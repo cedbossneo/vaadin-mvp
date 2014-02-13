@@ -16,6 +16,8 @@
 
 package com.vaadin.cdi.internal;
 
+import com.vaadin.server.VaadinRequest;
+
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.Set;
@@ -26,15 +28,21 @@ import javax.enterprise.inject.spi.InjectionPoint;
 
 public class UIBean implements Bean {
     private Bean delegate;
+    private VaadinRequest request;
     private int uiId;
 
-    public UIBean(Bean delegate, int uiId) {
+    public UIBean(Bean delegate, int uiId, VaadinRequest request) {
         this.delegate = delegate;
         this.uiId = uiId;
+        this.request = request;
     }
 
     public int getUiId() {
         return uiId;
+    }
+
+    public VaadinRequest getRequest(){
+        return request;
     }
 
     @Override

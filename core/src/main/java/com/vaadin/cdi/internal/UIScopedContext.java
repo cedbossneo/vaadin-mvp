@@ -27,6 +27,8 @@ import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 
 import com.vaadin.cdi.UIScoped;
+import com.vaadin.server.VaadinRequest;
+import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.UI;
 import com.vaadin.util.CurrentInstance;
 
@@ -67,7 +69,6 @@ public class UIScopedContext implements Context {
                 "Getting bean for contextual {0} and creational context {1}",
                 new Object[] { contextual, creationalContext });
 
-        BeanStoreContainer beanStoreContainer = getSessionBoundBeanStoreContainer();
         T beanInstance = null;
 
         UIBeanStore beanStore = null;
@@ -81,8 +82,10 @@ public class UIScopedContext implements Context {
             // yet but we have the UIBean.
             final UIBean uiBean = CurrentInstance.get(UIBean.class);
 
+            BeanStoreContainer beanStoreContainer = getSessionBoundBeanStoreContainer((VaadinSession) uiBean.getRequest().getAttribute(VaadinSession.class.getName()));
             beanStore = beanStoreContainer.getOrCreateUIBeanStoreFor(uiBean);
         } else if (UI.getCurrent() != null) {
+            BeanStoreContainer beanStoreContainer = getSessionBoundBeanStoreContainer(UI.getCurrent().getSession());
             if (contextual instanceof Bean
                     && UI.class.isAssignableFrom(((Bean) contextual)
                             .getBeanClass())
@@ -116,7 +119,10 @@ public class UIScopedContext implements Context {
     /**
      * @return bean store container bound to the user's http session
      */
-    private BeanStoreContainer getSessionBoundBeanStoreContainer() {
+    private BeanStoreContainer getSessionBoundBeanStoreContainer(VaadinSession session) {
+        BeanStoreContainer beanStoreContainer = (BeanStoreContainer)session.getAttribute("beanStoreContainer");
+        if (beanStoreContainer != null)
+            return beanStoreContainer;
         Set<Bean<?>> beans = beanManager.getBeans(BeanStoreContainer.class);
 
         if (beans.isEmpty()) {
@@ -131,8 +137,10 @@ public class UIScopedContext implements Context {
 
         Bean<?> bean = beans.iterator().next();
 
-        return (BeanStoreContainer) beanManager.getReference(bean,
+        BeanStoreContainer reference = (BeanStoreContainer) beanManager.getReference(bean,
                 bean.getBeanClass(), beanManager.createCreationalContext(bean));
+        session.setAttribute("beanStoreContainer", reference);
+        return reference;
     }
 
     private static Logger getLogger() {
