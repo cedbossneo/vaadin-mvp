@@ -20,6 +20,7 @@
 package com.cbnserver.gwtp4vaadin.core.proxy;
 
 import javax.inject.Inject;
+import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.ArrayList;
@@ -115,9 +116,13 @@ public class ParameterTokenFormatter implements TokenFormatter {
         assert !hierarchySeparator.equals(paramSeparator);
         assert !hierarchySeparator.equals(valueSeparator);
         assert !paramSeparator.equals(valueSeparator);
-        assert !valueSeparator.equals(URLEncoder.encode(valueSeparator));
-        assert !hierarchySeparator.equals(URLEncoder.encode(hierarchySeparator));
-        assert !paramSeparator.equals(URLEncoder.encode(paramSeparator));
+        try {
+            assert !valueSeparator.equals(URLEncoder.encode(valueSeparator, "UTF-8"));
+            assert !hierarchySeparator.equals(URLEncoder.encode(hierarchySeparator, "UTF-8"));
+            assert !paramSeparator.equals(URLEncoder.encode(paramSeparator, "UTF-8"));
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
         assert !hierarchySeparator.equals("%");
         assert !paramSeparator.equals("%");
         assert !valueSeparator.equals("%");
@@ -144,7 +149,11 @@ public class ParameterTokenFormatter implements TokenFormatter {
 
     @Override
     public PlaceRequest toPlaceRequest(String placeToken) throws TokenFormatException {
-        return unescapedStringToPlaceRequest(URLDecoder.decode(placeToken));
+        try {
+            return unescapedStringToPlaceRequest(URLDecoder.decode(placeToken, "UTF-8"));
+        } catch (UnsupportedEncodingException e) {
+            throw new TokenFormatException("Unable to decode token");
+        }
     }
 
     /**
@@ -198,7 +207,12 @@ public class ParameterTokenFormatter implements TokenFormatter {
 
     @Override
     public List<PlaceRequest> toPlaceRequestHierarchy(String historyToken) throws TokenFormatException {
-        String unescapedHistoryToken = URLDecoder.decode(historyToken);
+        String unescapedHistoryToken = null;
+        try {
+            unescapedHistoryToken = URLDecoder.decode(historyToken, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            throw new TokenFormatException("Unable to decode token");
+        }
 
         int split = unescapedHistoryToken.indexOf(hierarchySeparator);
         List<PlaceRequest> result = new ArrayList<PlaceRequest>();
@@ -281,7 +295,12 @@ public class ParameterTokenFormatter implements TokenFormatter {
             }
         }
 
-        return URLEncoder.encode(builder.toString());
+        try {
+            return URLEncoder.encode(builder.toString(), "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+            return builder.toString();
+        }
     }
 
     /**

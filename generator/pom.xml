@@ -26,11 +26,11 @@
     <artifactId>gwtp4vaadin-generator</artifactId>
     <name>gwtp4vaadin-generator</name>
     <groupId>com.cbnserver</groupId>
-    <version>1.0.13</version>
+    <version>1.0.14</version>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <vaadin.version>7.1.10</vaadin.version>
+        <vaadin.version>7.6.1</vaadin.version>
         <vaadin.plugin.version>${vaadin.version}</vaadin.plugin.version>
     </properties>
 
@@ -41,8 +41,8 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>2.5.1</version>
                 <configuration>
-                    <source>1.6</source>
-                    <target>1.6</target>
+                    <source>1.7</source>
+                    <target>1.7</target>
                     <compilerArgument>-proc:none</compilerArgument>
                 </configuration>
             </plugin>
@@ -73,7 +73,7 @@
         <dependency>
             <groupId>javax.enterprise</groupId>
             <artifactId>cdi-api</artifactId>
-            <version>1.0</version>
+            <version>1.2</version>
             <scope>provided</scope>
         </dependency>
         <dependency>

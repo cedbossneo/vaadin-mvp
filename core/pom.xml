@@ -26,11 +26,11 @@
     <artifactId>gwtp4vaadin-core</artifactId>
     <name>gwtp4vaadin-core</name>
     <groupId>com.cbnserver</groupId>
-    <version>1.0.13</version>
+    <version>1.0.14</version>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <vaadin.version>7.1.10</vaadin.version>
+        <vaadin.version>7.6.1</vaadin.version>
         <vaadin.plugin.version>${vaadin.version}</vaadin.plugin.version>
     </properties>
 
@@ -49,8 +49,8 @@
                 <version>3.0</version>
                 <configuration>
                     <compilerArgument>-proc:none</compilerArgument>
-                    <source>1.6</source>
-                    <target>1.6</target>
+                    <source>1.7</source>
+                    <target>1.7</target>
                 </configuration>
             </plugin>
             <plugin>
@@ -74,7 +74,7 @@
         <dependency>
             <groupId>javax</groupId>
             <artifactId>javaee-web-api</artifactId>
-            <version>6.0</version>
+            <version>7.0</version>
             <scope>provided</scope>
         </dependency>
 
